@@ -70,13 +70,13 @@ Web application of "Documents storing system" <MEPhI course>
 
 #### Requests
 
-🟢 12) `/request/request_id` - View request
+🌐🟢 12) `/request/request_id` - View request
 
-🟢 13) `/request/request_id` - Close request
+🌐🟢 13) `/request/request_id` - Close request
 
 🟢 14) `/request/request_id/merge` - Merge request
 
-🟢 15) `/request/request_id` - Change status of Request
+🌐🟢 15) `/request/request_id` - Change status of Request
 
 #### Files
 
