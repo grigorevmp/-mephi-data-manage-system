@@ -59,7 +59,7 @@ function WhoIAm() {
                 )}
             </div>
             <button className="workspaces" onClick={() => goToWorkspaces()}>Рабочие пространства</button>
-            {username.role === 1 ? (<button className="admin" onClick={() => logout()}>Панель администрирования</button> ) : (<p></p>)}
+            {username.role === 1 ? (<button className="admin" onClick={() => goToAdmin()}>Панель администрирования</button> ) : (<p></p>)}
             <button className="logout" onClick={() => logout()}>Завершить сеанс</button>
         </div>);
 }

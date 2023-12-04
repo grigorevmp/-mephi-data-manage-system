@@ -1,6 +1,8 @@
 from typing import List
 from uuid import UUID
 
+from sqlalchemy import update
+
 from areas.backend.core.accesses import AccessType
 from areas.backend.core.department_manager import DepartmentManager
 from areas.backend.core.user import User
@@ -8,7 +10,7 @@ from areas.backend.core.department import Department
 from flask import current_app
 from areas.backend.core.user_manager import UserNotFoundError
 from areas.backend.app_db import get_current_db
-from areas.backend.database.database import UserModel
+from areas.backend.database.database import UserModel, DepartmentModel
 from areas.backend.repository.data_store_storage_repository import DataStoreStorageRepository
 
 db = get_current_db(current_app)
@@ -63,8 +65,11 @@ class UserRepository:
     def get_user_departments_by_id(self, _id: UUID) -> list[str]:
         from areas.backend.database.database import UserModel
         user: UserModel = UserModel.query.filter_by(id=str(_id)).first()
-        return [department.name for department in user.departments]
-
+        department: DepartmentModel = DepartmentModel.query.filter_by(id=user.department_id).first()
+        if department is not None:
+            return [department.name]
+        else:
+            return []
 
     def get_user_from_db_by_email(self, email: str) -> User:
         from areas.backend.database.database import UserModel
@@ -133,7 +138,7 @@ class UserRepository:
                 password=user.passwordHash,
                 role=user.role
             )
-            for user in UserModel.query.filter_by(department_id=department.name).all()
+            for user in UserModel.query.filter_by(department_id=department.id).all()
         ]
         return Department(
             department_name=department.name,
@@ -155,6 +160,32 @@ class UserRepository:
         db.session.delete(department)
         db.session.commit()
 
+    def add_users_to_department(self, department_name: str, users: List[str]) -> Department:
+        from areas.backend.database.database import DepartmentModel, UserModel
+        department_model: DepartmentModel = DepartmentModel.query.filter_by(name=department_name).first()
+
+        for user in users:
+            user_model: UserModel = UserModel.query.filter_by(id=str(user)).first()
+
+            db.session.execute(update(UserModel).where(UserModel.id == str(user)).values(
+                department_id=department_model.id
+            ))
+
+            db.session.commit()
+
+    def delete_users_from_department(self, department_name: str, users: List[str]) -> Department:
+        from areas.backend.database.database import DepartmentModel, UserModel
+        department_model: DepartmentModel = DepartmentModel.query.filter_by(name=department_name).first()
+
+        for user in users:
+            user_model: UserModel = UserModel.query.filter_by(id=str(user)).first()
+
+            db.session.execute(update(UserModel).where(UserModel.id == str(user)).values(
+                department_id=None
+            ))
+
+            db.session.commit()
+
     def update_department_users(self, department: Department) -> Department:
         from areas.backend.database.database import DepartmentModel, UserModel
         department_model: DepartmentModel = DepartmentModel.query.filter_by(name=department.department_name).first()
@@ -165,49 +196,6 @@ class UserRepository:
         department_model.users = users
         db.session.commit()
         return self.get_department_by_name(department.department_name)
-
-    @staticmethod
-    def remove_users_accesses(users_ids: List[str], department_name: str):
-        from areas.backend.database.database import UserModel
-
-        for user in users_ids:
-            user_model: UserModel = UserModel.query.filter_by(id=user).first()
-            if user_model is not None:
-                for space in user_model.spaces:
-                    if space.root_directory.is_root:
-                        for access in space.root_directory.files[0].accesses:
-                            if access.access_type == AccessType.Department:
-                                if access.value == department_name:
-                                    user_model.spaces.remove(space)
-                    else:
-                        for access in space.root_directory.accesses:
-                            if access.access_type == AccessType.Department:
-                                if access.value == department_name:
-                                    user_model.spaces.remove(space)
-
-        db.session.commit()
-
-    def add_users_accesses(self, users_ids: List[str], department_name: str):
-        from areas.backend.database.database import AccessModel, FileModel, DirectoryModel, UserModel
-
-        accesses: list[AccessModel] = AccessModel.query.filter(
-            (AccessModel.access_type == AccessType.Department) & (AccessModel.value == department_name)
-        ).all()
-
-        for access in accesses:
-            if access.parent_file_id is not None:
-                file: FileModel = FileModel.query.filter_by(id=access.parent_file_id).first()
-                for user_id in users_ids:
-                    user_model: UserModel = UserModel.query.filter_by(id=user_id).first()
-                    if user_model is not None:
-                        self.data_storage_repo.add_shared_space_for_file_model_by_email(file, user_model.email)
-            elif access.parent_id is not None:
-                directory: DirectoryModel = DirectoryModel.query.filter_by(id=access.parent_id).first()
-                for user_id in users_ids:
-                    user_model: UserModel = UserModel.query.filter_by(id=user_id).first()
-                    if user_model is not None:
-                        self.data_storage_repo.add_shared_space_for_directory_model_by_email(directory,
-                                                                                             user_model.email)
 
     def get_root_user_space_content(self, user_email: str):
         return self.data_storage_repo.get_root_user_space_content(user_email)

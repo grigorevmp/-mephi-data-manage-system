@@ -60,6 +60,48 @@ export async function add_department(content) {
     return response.status;
 }
 
+export async function delete_department(content) {
+    const response = await fetch(`${API_BASE_URL}/department`, {
+        method: 'DELETE', headers: {
+            'Content-Type': 'application/json',
+        }, body: JSON.stringify(content), credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Deletion failed');
+    }
+
+    return response.status;
+}
+
+export async function add_user_to_department(name, users) {
+    const response = await fetch(`${API_BASE_URL}/department/users?name=${name}`, {
+        method: 'POST', headers: {
+            'Content-Type': 'application/json',
+        }, body: JSON.stringify({users}), credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Deletion failed');
+    }
+
+    return response.status;
+}
+
+export async function delete_user_from_department(name, users) {
+    const response = await fetch(`${API_BASE_URL}/department/users?name=${name}`, {
+        method: 'DELETE', headers: {
+            'Content-Type': 'application/json',
+        }, body: JSON.stringify({users}), credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Deletion failed');
+    }
+
+    return response.status;
+}
+
 export async function archive_workspace(id) {
     const response = await fetch(`${API_BASE_URL}/workspace/${id}/archive`, {
         method: 'POST', headers: {
@@ -103,6 +145,35 @@ export async function delete_branch(space_id, branch_id) {
         throw new Error('Deletion failed');
     }
 
+    return response.status;
+}
+
+
+export async function delete_workspace(space_id) {
+    const response = await fetch(`${API_BASE_URL}/workspace/${space_id}`, {
+        method: 'DELETE', headers: {
+            'Content-Type': 'application/json',
+        }, credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Deletion failed');
+    }
+
+    return response.status;
+}
+
+
+export async function update_workspace(space_id, content) {
+    const response = await fetch(`${API_BASE_URL}/workspace/${space_id}`, {
+        method: 'PUT', headers: {
+            'Content-Type': 'application/json',
+        }, body: JSON.stringify(content), credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Deletion failed');
+    }
 
     return response.status;
 }

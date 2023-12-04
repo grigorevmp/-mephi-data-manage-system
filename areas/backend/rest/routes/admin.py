@@ -160,7 +160,6 @@ def delete_workspace(space_id):
 """
 
 
-# TODO REFACTOR OLD
 @ADMIN_REQUEST_API.route('/department', methods=['GET'])
 @admin_access
 def get_department_list():
@@ -211,7 +210,6 @@ def add_new_department():
     return jsonify({}), 200
 
 
-# TODO REFACTOR OLD
 @ADMIN_REQUEST_API.route('/department', methods=['DELETE'])
 @admin_access
 def delete_department():
@@ -237,7 +235,6 @@ def delete_department():
     return jsonify({}), 200
 
 
-# TODO REFACTOR OLD
 @ADMIN_REQUEST_API.route('/department/users', methods=['GET'])
 @admin_access
 def get_department_with_users():
@@ -267,7 +264,6 @@ def get_department_with_users():
     ), 200
 
 
-# TODO REFACTOR OLD
 @ADMIN_REQUEST_API.route('/department/users', methods=['POST'])
 @admin_access
 def add_users_to_department():
@@ -295,21 +291,14 @@ def add_users_to_department():
     except KeyError:
         return jsonify({'error': 'invalid request body'}), 400
     try:
-        department = userController.add_users_to_department(name, users)
+        userController.add_users_to_department(name, users)
     except DepartmentNotFoundError:
         return jsonify({'error': 'Department with such name doesnt exist'}), 404
     except UserNotFoundError:
         return jsonify({'error': 'Such user not found'}), 404
-    users = [{"id": user.get_id(), "email": user.email} for user in department.users]
-    return jsonify(
-        {
-            "department_name": department.department_name,
-            "users": users
-        }
-    ), 200
+    return jsonify(), 200
 
 
-# TODO REFACTOR OLD
 @ADMIN_REQUEST_API.route('/department/users', methods=['DELETE'])
 @admin_access
 def delete_user_from_department():
@@ -337,16 +326,10 @@ def delete_user_from_department():
     except KeyError:
         return jsonify({'error': 'invalid request body'}), 400
     try:
-        department = userController.delete_users_from_department(name, users)
+        userController.delete_users_from_department(name, users)
     except DepartmentNotFoundError:
         return jsonify({'error': 'Department with such name doesnt exist'}), 404
-    users = [{"id": user.get_id(), "email": user.email} for user in department.users]
-    return jsonify(
-        {
-            "department_name": department.department_name,
-            "users": users
-        }
-    ), 200
+    return jsonify(), 200
 
 
 @ADMIN_REQUEST_API.route('/user', methods=['GET'])

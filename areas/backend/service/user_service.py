@@ -73,7 +73,7 @@ class UserService:
         return output_list
 
     def get_user_info(self, user: User) -> list[str]:
-        departments = user.department_manager.get_departments()
+        departments = self.user_repo.get_user_departments_by_id(user.get_id())
         return departments
 
     def add_new_department(self, new_department: Department) -> None:
@@ -90,27 +90,9 @@ class UserService:
         return self.user_repo.get_department_by_name(department_name)
 
     def add_users_to_department(self, department_name: str, users: List[str]) -> Department:
-        department = self.user_repo.get_department_by_name(department_name)
-        new_users = []
-        for user in users:
-            new_users.append(self.user_repo.get_user_from_db_by_id(UUID(user)))
-        old_users = department.users
-        updated_users = old_users + new_users
-        department.users = updated_users
-        new_department = self.user_repo.update_department_users(department)
-        self.user_repo.add_users_accesses(users, department_name)
+        new_department = self.user_repo.add_users_to_department(department_name, users)
         return new_department
 
     def delete_users_from_department(self, department_name: str, users: List[str]) -> Department:
-        department = self.user_repo.get_department_by_name(department_name)
-        new_users = []
-        users_to_delete = []
-        for user in department.users:
-            if str(user.get_id()) not in users:
-                new_users.append(user)
-            else:
-                users_to_delete.append(str(user.get_id()))
-        department.users = new_users
-        new_department = self.user_repo.update_department_users(department)
-        self.user_repo.remove_users_accesses(users_to_delete, department_name)
+        new_department = self.user_repo.delete_users_from_department(department_name, users)
         return new_department

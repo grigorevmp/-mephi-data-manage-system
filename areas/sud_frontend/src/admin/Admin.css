@@ -24,7 +24,7 @@
     align-items: center;
 }
 
-.username-content p{
+.username-content p {
     margin: 10px 0 0 0;
 }
 
@@ -43,7 +43,7 @@ h4 {
     position: relative;
 }
 
-.avatar p{
+.avatar p {
     margin: 0;
     font-size: x-large;
 }
@@ -74,7 +74,7 @@ h4 {
 }
 
 .workspaces:hover {
-   background-color: #0071ea;
+    background-color: #0071ea;
 }
 
 .logout {
@@ -91,5 +91,77 @@ h4 {
 }
 
 .logout:hover {
-   background-color: #f15454;
+    background-color: #f15454;
+}
+
+.admin-button-action {
+    padding: 10px 20px;
+    min-width: fit-content;
+    width: fit-content;
+    align-self: end;
+    border-radius: 30px;
+    font-size: small;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    margin: 0;
+}
+
+.item-block {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    padding: 15px;
+    min-width: 400px;
+    border-radius: 10px;
+    marker: none;
+    margin: 10px;
+    cursor: pointer;
+    align-items: center;
+}
+
+.item-block-inner {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    padding: 0;
+    min-width: 400px;
+    border-radius: 10px;
+    marker: none;
+    margin: 0;
+    cursor: pointer;
+    align-items: center;
+}
+
+.workspace-item-action-block {
+    display: flex;
+    align-items: center;
+}
+
+.workspace-item-action-block {
+    display: flex;
+    align-items: center;
+}
+
+.workspace-item-action-block .workspace-status {
+    margin-right: 10px;
+}
+
+select {
+    padding: 5px;
+    margin-left: 10px;
+}
+
+.admin-user-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-content: center;
+    justify-content: flex-start;
+    padding-right: 10px;
 }
