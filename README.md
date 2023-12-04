@@ -18,21 +18,19 @@ Web application of "Documents storing system" <MEPhI course>
 
 🌐🟢 2) `/department` - Add new department
 
-🟡  3) `/department` - Delete department
+🌐🟢  3) `/department` - Delete department
 
 🌐🟢  4) `/department/users` - Get users in department
 
-🟡  5) `/department/users` - Add users to department
+🌐🟢  5) `/department/users` - Add users to department
 
-🟡  6) `/department/users` - Remove users from department
+🌐🟢  6) `/department/users` - Remove users from department
 
 🌐🟢  7) `/users` - Get user list
 
 🌐🟢 8) `/all_workspaces` - All workspace for users
 
-🟡 8) `/unarchive` - Unarchive workspace
-
-🟡 9) `/delete` - Delete workspace forever
+🌐🟢 9) `/delete` - Delete workspace forever
 
 ### User
 
