@@ -50,7 +50,7 @@ class TestUserWorkspace:
             'title': 'Test add title',
             'description': 'Test add description',
             'document_name': 'test.txt',
-            'document_data': 'filebase64,Test add description',
+            'document_data': 'filebase64,ODlkMjAtODliYjINCmQwMDFjLWI1NjNjDQplNjUwMS0zNmQ4Mg0KZWIxYzQtZjQ0NGUNCjUzNzVmLWU1Y2ZjDQowZGMxOS03Yzc4Ng0KOWE0NTgtYWUzOTQNCmYzNWYxLTViYzc3DQozYWI2ZS00MjVjYQ0KOTM0ZDctZDEyZjUNCjIwNDZhLTdhMzJhDQowNzI5Zi0yZTFkZA0KZTU0ZGMtOWQ4M2QNCmU0MTVkLTE2NTljDQpjYjA0YS1lODdiMg0KZDY1MGItMDQ4N2Q='
         }
         response = app_client_user.post(f'/workspace/add', json=req_data)
         assert response.status_code == 200
