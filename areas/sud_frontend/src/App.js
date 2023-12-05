@@ -1,5 +1,5 @@
 import React, {Fragment} from 'react';
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
 import LoginForm from './login/LoginForm';
 import RegistrationForm from './registration/RegistrationForm';
 
@@ -26,6 +26,8 @@ function App() {
                         <Route exact path="/registration"
                                element={<RegistrationForm onRegistration={handleRegistration}/>}
                         />
+
+                        <Route path="*" element={<Navigate to="/login" replace />} />
                     </Routes>
                 </Fragment>
             </Router>

@@ -55,8 +55,8 @@ class DataStoreService:
 
         return name, user_id, space
 
-    def create_workspace(self, user_mail: str, workspace: WorkSpace):
-        return self.data_store_storage_repo.create_workspace(user_mail, workspace)
+    def create_workspace(self, user_mail: str, workspace: WorkSpace, document_name: str, document_data: str):
+        return self.data_store_storage_repo.create_workspace(user_mail, workspace, document_name, document_data)
 
     def get_all_workspaces(self, page: int, limit: int, deleted: bool) -> list[(str, WorkSpace)]:
         workspaces = self.data_store_storage_repo.get_all_workspaces(deleted)

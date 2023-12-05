@@ -1,4 +1,5 @@
 import base64
+import datetime
 import os
 import uuid
 from io import BytesIO
@@ -36,9 +37,9 @@ class DataStoreStorageRepository:
             secret_key=secret_key,
         )
 
-        found = client.bucket_exists("cloudstorage")
+        found = client.bucket_exists("sud")
         if not found:  # pragma: no cover
-            client.make_bucket("cloudstorage")  # pragma: no cover
+            client.make_bucket("sud")  # pragma: no cover
         else:  # pragma: no cover
             pass  # pragma: no cover
 
@@ -393,16 +394,17 @@ class DataStoreStorageRepository:
         workspaces: list[WorkspaceModel] = WorkspaceModel.query.filter(
             WorkspaceModel.status != WorkSpaceStatus.Deleted.value
         ).all() if not deleted else WorkspaceModel.query.all()
-        workspaces_list = [(UserModel.query.filter_by(id=workspace.user_id).first().username, workspace.user_id, WorkSpace(
-            title=workspace.title,
-            description=workspace.description,
-            branches=[],
-            requests=[],
-            accesses=[],
-            main_branch=None,
-            status=workspace.status,
-            _id=workspace.id,
-        )) for workspace in workspaces]
+        workspaces_list = [
+            (UserModel.query.filter_by(id=workspace.user_id).first().username, workspace.user_id, WorkSpace(
+                title=workspace.title,
+                description=workspace.description,
+                branches=[],
+                requests=[],
+                accesses=[],
+                main_branch=None,
+                status=workspace.status,
+                _id=workspace.id,
+            )) for workspace in workspaces]
         return workspaces_list
 
     @staticmethod
@@ -421,16 +423,18 @@ class DataStoreStorageRepository:
             _id=workspace.id,
         ))
 
-    def create_workspace(self, user_mail: str, workspace: WorkSpace):
+    def create_workspace(self, user_mail: str, workspace: WorkSpace, document_name: str, document_data: str):
         user: UserModel = UserModel.query.filter_by(email=user_mail).first()
 
         workspace_id = str(uuid.uuid4())
+
+        file_id = uuid.uuid4()
 
         _branch = BranchModel(
             id=str(uuid.uuid4()),
             name="master",
             author=user.id,
-            document_id=-1,
+            document_id=str(file_id),
             parent_branch_id=-1,
             workspace_id=workspace_id
         )
@@ -448,8 +452,11 @@ class DataStoreStorageRepository:
         )
 
         self.db.session.add(_workspace)
-
         self.db.session.commit()
+
+        document = Document(name=document_name, file=file_id, task_id=uuid.uuid4(),
+                            time=datetime.datetime.now(), _id=file_id)
+        self.add_new_document(workspace, document, document_data, _branch)
 
         return _workspace.id
 
@@ -770,11 +777,11 @@ class DataStoreStorageRepository:
         else:
             raise NotAllowedError()
 
-    def add_new_document(self, workspace: WorkSpace, new_document: Document, new_file_data: str) -> uuid.UUID:
-        branch: BranchModel = BranchModel.query.filter_by(name="master", workspace_id=workspace.get_id()).first()
+    def add_new_document(self, workspace: WorkSpace, new_document: Document, new_file_data: str, branch: BranchModel) -> uuid.UUID:
+        print("new_file_data:", new_file_data)
 
         doc = DocumentModel(
-            id=str(new_document.get_id()),
+            id=str(new_document.file),
             name=new_document.name,
             task_id=str(new_document.task_id),
             modification_time=str(new_document.time),
@@ -797,16 +804,16 @@ class DataStoreStorageRepository:
         return new_document.get_id()
 
     def save_file_to_cloud(self, file_name):
-        self.minio_client.fput_object("cloudstorage", file_name, f"cache/{file_name}")
+        self.minio_client.fput_object("sud", file_name, f"cache/{file_name}")
         print(f"'cache/{file_name}' is successfully uploaded as object 'test_file.py' to bucket 'cloud_storage'.")
-        os.remove(f"cache/{file_name}")
+        # os.remove(f"cache/{file_name}")
 
     def get_binary_file_from_cloud_by_id(self, file_name: str) -> BinaryIO:
         return BytesIO(self.get_file_from_cloud(f"{file_name}"))
 
     def get_file_from_cloud(self, file_name):
         try:
-            cloud_file_request = self.minio_client.get_object("cloudstorage", file_name)
+            cloud_file_request = self.minio_client.get_object("sud", file_name)
             return cloud_file_request.data
         except:
             raise FileNotFoundError
@@ -902,7 +909,7 @@ class DataStoreStorageRepository:
     #         return None
     #
     # def remove_files_from_cloud(self, file_name):
-    #     self.minio_client.remove_object("cloudstorage", file_name)
+    #     self.minio_client.remove_object("sud", file_name)
     #
     #
     #

@@ -16,6 +16,9 @@ function UserWorkspaces() {
     const [workspaces, setWorkspaces] = useState([]);
     const [workspaces_access, setWorkspaces_access] = useState([]);
     const [workspaces_open, setWorkspaces_open] = useState([]);
+    const [file, setFile] = useState();
+    const [fileName, setFilename] = useState(null);
+    const [result, setResult] = useState(null);
     const [username, setUsername] = useState("Anonim");
     const [error, setError] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -59,6 +62,38 @@ function UserWorkspaces() {
 
     const toggleAccess = () => {
         setIsAccessOpen(!isAccessOpen);
+    };
+
+    function readFileDataAsBase64(e) {
+        const file = e.target.files[0];
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                resolve(event.target.result);
+            };
+
+            reader.onerror = (err) => {
+                reject(err);
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const uploadedFile = e.target.files[0];
+            setFile(uploadedFile);
+            console.error(e.target.files[0]);
+
+            readFileDataAsBase64(e).then(value => {
+                    console.error(value);
+                    setResult(value);
+                }
+            )
+        }
     };
 
     const handleWorkspaceClick = (workspaceId) => {
@@ -216,8 +251,16 @@ function UserWorkspaces() {
                             required
                         />
                     </div>
+                    <div className="form-group">
+                        <label htmlFor="fileUpload">Загрузить файл</label>
+                        <input
+                            type="file"
+                            id="fileUpload"
+                            onChange={handleFileChange}
+                        />
+                    </div>
                     <button className="add-workspace-button"
-                            onClick={() => handleWorkspaceAdding(title, description)}>Сохранить
+                            onClick={() => handleWorkspaceAdding(title, description, file, result)}>Сохранить
                     </button>
                     <button className="add-workspace-button-close" onClick={toggleDialog}>Закрыть</button>
                 </div>
@@ -265,7 +308,8 @@ function UserWorkspaces() {
                     <button className="add-workspace-button"
                             onClick={() => handleAddUserAccessWorkspace(workspace.id, department)}>Сохранить
                     </button>
-                    <button className="add-workspace-button-close" onClick={toggleAddDepartmentAccessDialog}>Закрыть</button>
+                    <button className="add-workspace-button-close" onClick={toggleAddDepartmentAccessDialog}>Закрыть
+                    </button>
                 </div>
             )}
 
@@ -294,29 +338,36 @@ function UserWorkspaces() {
                     {accesses.length > 0 ? (<ul className="all-workspaces-container">
                         {accesses.map(access => (
                             <div>
-                                 {access.class === "DepartmentAccess" ? (<li
-                                     className="remove-action-button"
-                                     onClick={() => handleDeleteDepartmentAccessWorkspace(workspace.id, access.content)}
-                                 >Удалить доступ для отдела {access.content}
-                                 </li>) : (<p></p>) }
-                                 {access.class === "UserAccess" ? (<li
-                                     className="remove-action-button"
-                                     onClick={() => handleDeleteUserAccessWorkspace(workspace.id, access.content)}
-                                 >Удалить доступ для {access.content}</li>) : (<p></p>) }
+                                {access.class === "DepartmentAccess" ? (<li
+                                    className="remove-action-button"
+                                    onClick={() => handleDeleteDepartmentAccessWorkspace(workspace.id, access.content)}
+                                >Удалить доступ для отдела {access.content}
+                                </li>) : (<p></p>)}
+                                {access.class === "UserAccess" ? (<li
+                                    className="remove-action-button"
+                                    onClick={() => handleDeleteUserAccessWorkspace(workspace.id, access.content)}
+                                >Удалить доступ для {access.content}</li>) : (<p></p>)}
                             </div>
                         ))}
 
                     </ul>) : (<p></p>)}
 
-                      {!accesses.some(access => access.class === "UrlAccess") && (
-                        <button className="access-action-button" onClick={() => handleAddUrlAccessWorkspace(workspace.id)}>Добавить общий доступ</button>
-                      )}
-                      {accesses.some(access => access.class === "UrlAccess") && (
-                        <button className="remove-action-button" onClick={() => handleDeleteUrlAccessWorkspace(workspace.id)}>Удалить общий доступ</button>
-                      )}
+                    {!accesses.some(access => access.class === "UrlAccess") && (
+                        <button className="access-action-button"
+                                onClick={() => handleAddUrlAccessWorkspace(workspace.id)}>Добавить общий доступ</button>
+                    )}
+                    {accesses.some(access => access.class === "UrlAccess") && (
+                        <button className="remove-action-button"
+                                onClick={() => handleDeleteUrlAccessWorkspace(workspace.id)}>Удалить общий
+                            доступ</button>
+                    )}
 
-                        <button className="access-action-button" onClick={toggleAddUserAccessDialog}>Добавить доступ пользователю</button>
-                        <button className="access-action-button" onClick={toggleAddDepartmentAccessDialog}>Добавить доступ отделу</button>
+                    <button className="access-action-button" onClick={toggleAddUserAccessDialog}>Добавить доступ
+                        пользователю
+                    </button>
+                    <button className="access-action-button" onClick={toggleAddDepartmentAccessDialog}>Добавить доступ
+                        отделу
+                    </button>
 
                     <button className="workspace-archive-button-close" onClick={() => toggleAccess()}>
                         Закрыть
@@ -424,7 +475,8 @@ function UserWorkspaces() {
                             <div className="all-request">
                                 {workspace.requests.length > 0 ? (<ul className="all-requests-container">
                                     {workspace.requests.map(request => (
-                                        <li onClick={() => goToRequest(workspace.id, request.source_branch_id, request.id)} className="request-item" key={request.id}>
+                                        <li onClick={() => goToRequest(workspace.id, request.source_branch_id, request.id)}
+                                            className="request-item" key={request.id}>
                                             <div>{request.title}</div>
                                             <div>{request.description}</div>
                                             <div>Статус: {R_STATUS_MAP[request.status] || 'Неизвестный статус'}</div>
@@ -434,7 +486,8 @@ function UserWorkspaces() {
 
                             {workspace.username === username ? (
                                 <div className="workspace-action">
-                                    <button className="workspace-access" onClick={() => handleAccessesClick(workspace.id)}><p>Доступы</p></button>
+                                    <button className="workspace-access"
+                                            onClick={() => handleAccessesClick(workspace.id)}><p>Доступы</p></button>
                                     <button className="workspace-archive" onClick={toggleConfirm}><p>Архивировать</p>
                                     </button>
                                 </div>
@@ -447,9 +500,24 @@ function UserWorkspaces() {
         </div>);
 }
 
-export async function handleWorkspaceAdding(title, description) {
+export async function handleWorkspaceAdding(title, description, file, result) {
+    console.error(file);
+    console.error(file.name);
+    // const document_data = new FormData();
+    // document_data.append(file.name, file, file.name);
+    const document_name = file.name
+
+    // This result contains the bytestring data of the file
+    const document_data = result;
+
+    // Convert it to a UInt8Array if necessary
+    // const bytes = new Uint8Array(arrayBuffer);
+    //
+    // // Or directly create a Blob if you're going to use formData
+    // const document_data = new Blob([arrayBuffer], {type: file.type});
+
     try {
-        const response = await add_workspace({title, description});
+        const response = await add_workspace({title, description, document_name, document_data});
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
@@ -497,6 +565,7 @@ export async function handleAddUserAccessWorkspace(space_id, email) {
         console.error('Error:', error);
     }
 }
+
 export async function handleDeleteUserAccessWorkspace(space_id, email) {
     try {
         const response = await delete_email_access(space_id, email);
@@ -530,6 +599,7 @@ export async function handleAddDepartmentAccessWorkspace(space_id, department) {
         console.error('Error:', error);
     }
 }
+
 export async function handleDeleteDepartmentAccessWorkspace(space_id, department) {
     try {
         const response = await delete_department_access(space_id, department);
@@ -564,6 +634,7 @@ export async function handleAddUrlAccessWorkspace(space_id, department) {
         console.error('Error:', error);
     }
 }
+
 export async function handleDeleteUrlAccessWorkspace(space_id, department) {
     try {
         const response = await delete_url_access(space_id);

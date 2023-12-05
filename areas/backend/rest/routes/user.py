@@ -312,6 +312,12 @@ def add_workspace():
     request_data = request.get_json()
     try:
         title = request_data['title']
+        document_name = request_data['document_name']
+        document_data = request_data['document_data'].split("base64,")[1]
+
+        print(document_name)
+        print(document_data)
+
         description = request_data['description']
     except KeyError:
         return jsonify({'error': 'Invalid request body'}), 400
@@ -329,7 +335,7 @@ def add_workspace():
             status=WorkSpaceStatus.Active.value,
         )
 
-        new_file_id = dataStoreController.create_workspace(user.email, workspace)
+        new_file_id = dataStoreController.create_workspace(user.email, workspace, document_name, document_data)
     except ItemNotFoundError:
         return jsonify({'error': 'Incorrect directory'}), 404
     except NotAllowedError:
@@ -575,7 +581,6 @@ def force_merge(space_id, request_id):
 """
 
 
-# TODO REFACTOR OLD
 @USER_REQUEST_API.route('/document', methods=['POST'])
 def add_new_file():
     request_data = request.get_json()
@@ -589,11 +594,10 @@ def add_new_file():
     try:
         user = get_user_by_token()
         new_document_id = dataStoreController.add_new_document(user.email, uuid.UUID(workspace_id), new_document_name,
-                                                           new_document_type, new_document_data)
+                                                               new_document_type, new_document_data)
     except ItemNotFoundError:
         return jsonify({'error': 'Incorrect workspace'}), 404
     except AlreadyExistsError:
-        # TODO: ответ должен содержать предложение о замене существующего файла
         return jsonify({'error': 'File name already exists'}), 409
     return jsonify({'id': new_document_id}), 200
 

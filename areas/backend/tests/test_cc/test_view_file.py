@@ -31,7 +31,7 @@ class TestViewFileById:
             access_key=access_key,
             secret_key=secret_key,
         )
-        client.remove_object("cloudstorage", f"{_id}.jpeg")
+        client.remove_object("sud", f"{_id}.jpeg")
         response = app_client_user.get(f'/file/{_id}/view')
         assert response.status_code == 404
         assert response.text == '{"error":"File is damaged"}\n'
@@ -51,7 +51,7 @@ class TestViewFileById:
             access_key=access_key,
             secret_key=secret_key,
         )
-        client.remove_object("cloudstorage", f"{_id}.jpeg")
+        client.remove_object("sud", f"{_id}.jpeg")
         assert response.status_code == 200
 
     def test_file_other_space_success(self, client, fill_db):
