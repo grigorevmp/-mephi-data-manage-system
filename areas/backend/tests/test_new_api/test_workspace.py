@@ -50,7 +50,7 @@ class TestUserWorkspace:
             'title': 'Test add title',
             'description': 'Test add description',
             'document_name': 'test.txt',
-            'document_data': 'Test add description',
+            'document_data': 'filebase64,Test add description',
         }
         response = app_client_user.post(f'/workspace/add', json=req_data)
         assert response.status_code == 200
