@@ -15,16 +15,16 @@ services:
     command: server --console-address ":9001" /data
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: ./areas/backend
+      dockerfile: /Dockerfile
     ports:
       - "8080:8080"
     depends_on:
         - minio
   ui:
     build:
-      context: ./sud_frontend
-      dockerfile: Dockerfile
+      context: ./areas/sud_frontend
+      dockerfile: /Dockerfile
     restart: always
     expose:
         - "3333"
