@@ -207,9 +207,9 @@ function Branch() {
                                             </p>
                                         </p>
                                     }
-                                    <p className="request-content">{branch.task_id}</p>
-                                    <p className="request-content">{branch.file}</p>
-                                    <p className="request-content">{branch.document_id}</p>
+                                    <p className="request-content"><b>Task ID:</b> {branch.task_id}</p>
+                                    <p className="request-content"><b>Document name:</b> {branch.document}</p>
+                                    <p className="request-content"><b>Document ID:</b> {branch.document_id}</p>
                                 </div>
                             </div>
                             

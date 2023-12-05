@@ -82,7 +82,7 @@ Web application of "Documents storing system" <MEPhI course>
 
 #### Files
 
-🟡 16) `/file` - Add file
+🌐🟢 16) (-> 6) `/workspace/add` - Add file
 
 🟡 17) `/file/<file_id>/view` - View file
 
