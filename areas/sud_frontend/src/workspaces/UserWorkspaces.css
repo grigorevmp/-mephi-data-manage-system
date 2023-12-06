@@ -36,6 +36,7 @@
     position: absolute;
     background: white;
     min-width: 300px;
+    max-width: 40%;
     width: fit-content;
     border-radius: 20px;
     box-shadow: 1px 1px 6px #00000024;

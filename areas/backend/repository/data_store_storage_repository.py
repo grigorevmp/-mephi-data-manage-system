@@ -456,7 +456,7 @@ class DataStoreStorageRepository:
 
         document = Document(name=document_name, file=file_id, task_id=uuid.uuid4(),
                             time=datetime.datetime.now(), _id=file_id)
-        self.add_new_document(workspace, document, document_data, _branch)
+        self.add_new_document(document, document_data, _branch)
 
         return _workspace.id
 
@@ -578,13 +578,14 @@ class DataStoreStorageRepository:
 
     def change_workspace_status(self, space_id: uuid.UUID, status: str, user_mail: str | None = None, admin=False):
         if admin or self.is_author_of_workspace(user_mail, space_id):
-            self.db.session.execute(update(WorkspaceModel).where(WorkspaceModel.id == str(space_id)).values(
-                status=status
-            ))
-            self.db.session.commit()
-            return None
-        else:
-            raise NotAllowedError()
+            if admin or self.is_author_of_workspace(user_mail, space_id):
+                self.db.session.execute(update(WorkspaceModel).where(WorkspaceModel.id == str(space_id)).values(
+                    status=status
+                ))
+                self.db.session.commit()
+                return None
+            else:
+                raise NotAllowedError()
 
     def change_workspace_owner(self, space_id: uuid.UUID, owner: uuid.UUID):
         from areas.backend.database.database import UserModel
@@ -676,13 +677,15 @@ class DataStoreStorageRepository:
         user: UserModel = UserModel.query.filter_by(email=user_mail).first()
         username, user_id, workspace = self.get_workspace_by_id(user_mail, workspace_id)
 
+        document_id = uuid.uuid4()
+
         if self.has_access_to_workspace(workspace, user):
             _branch = BranchModel(
                 id=str(uuid.uuid4()),
                 name=branch.name,
                 author=str(branch.author),
                 workspace_id=str(workspace_id),
-                document_id=branch.document,
+                document_id=str(document_id),
                 parent_branch_id=str(branch.get_parent_id()),
             )
 
@@ -690,6 +693,17 @@ class DataStoreStorageRepository:
             workspace.branches.append(_branch)
 
             self.db.session.commit()
+
+            old_document: DocumentModel = DocumentModel.query.filter_by(id=branch.document).first()
+
+            document_data = BytesIO(self.get_file_from_cloud(old_document.id + "_" + old_document.name)).read()
+
+            document = Document(name=old_document.name, file=old_document.file_id, task_id=uuid.uuid4(),
+                                time=datetime.datetime.now(), _id=document_id)
+
+            base64_bytes = base64.b64encode(document_data).decode('ascii')
+
+            self.add_new_document(document, base64_bytes, _branch)
 
             return _branch.id
         else:
@@ -777,14 +791,14 @@ class DataStoreStorageRepository:
         else:
             raise NotAllowedError()
 
-    def add_new_document(self, workspace: WorkSpace, new_document: Document, new_file_data: str, branch: BranchModel) -> uuid.UUID:
+    def add_new_document(self, new_document: Document, new_file_data: str, branch: BranchModel) -> uuid.UUID:
         print("new_file_data:", new_file_data)
 
         doc = DocumentModel(
-            id=str(new_document.file),
+            id=str(new_document.get_id()),
             name=new_document.name,
             task_id=str(new_document.task_id),
-            modification_time=str(new_document.time),
+            modification_time=datetime.datetime.now(),
             file_id=str(new_document.file),
         )
 
@@ -796,11 +810,11 @@ class DataStoreStorageRepository:
 
         self.db.session.commit()
 
-        file_name = f'{new_document.name}'
-        with open(f'cache/{file_name}', "wb") as fh:
+        fn = str(new_document.get_id()) + "_" + new_document.name
+        with open(f'cache/{fn}', "wb") as fh:
             fh.write(base64.decodebytes(str.encode(new_file_data)))
 
-        self.save_file_to_cloud(file_name)
+        self.save_file_to_cloud(fn)
         return new_document.get_id()
 
     def save_file_to_cloud(self, file_name):
@@ -811,7 +825,19 @@ class DataStoreStorageRepository:
     def get_binary_file_from_cloud_by_id(self, file_name: str) -> BinaryIO:
         return BytesIO(self.get_file_from_cloud(f"{file_name}"))
 
+    @staticmethod
+    def get_binary_io_file_from_cache(file_name: str) -> BinaryIO:
+        with open(file_name, 'rb') as binary_file:
+            file_contents = binary_file.read()
+
+            print(file_contents)
+
+            binary_file.seek(0)
+
+            return BytesIO(binary_file.read())
+
     def get_file_from_cloud(self, file_name):
+        print("file_name:" + file_name)
         try:
             cloud_file_request = self.minio_client.get_object("sud", file_name)
             return cloud_file_request.data
@@ -823,6 +849,24 @@ class DataStoreStorageRepository:
             self.db.session.execute(update(DocumentModel).where(DocumentModel.id ==
                                                                 str(item.get_id())).values(name=item.get_name()))
         self.db.session.commit()
+
+    def get_document_by_id(self, user_mail, document_id) -> Document:
+        branch: BranchModel = BranchModel.query.filter_by(document_id=str(document_id)).first()
+
+        user: UserModel = UserModel.query.filter_by(email=user_mail).first()
+        username, user_id, workspace = self.get_workspace_by_id(user_mail, branch.workspace_id)
+
+        if self.has_access_to_workspace(workspace, user):
+            doc: DocumentModel = DocumentModel.query.filter_by(id=str(document_id)).first()
+
+            return Document(
+                name=doc.name,
+                task_id=doc.task_id,
+                file=doc.file_id,
+                time=doc.modification_time,
+            )
+        else:
+            raise NotAllowedError()
 
     #############
     # LEGACY

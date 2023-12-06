@@ -613,6 +613,9 @@ def view_file_by_id(file_id):
         file to view
     """
     user = get_user_by_token()
+
+    print("Request to get file with id = " + file_id)
+
     try:
         file: Optional[Document] = dataStoreController.get_file_by_id(user.email, uuid.UUID(hex=file_id))
     except FileNotFoundError:
@@ -639,7 +642,7 @@ def view_file_by_id(file_id):
         return jsonify({'error': 'Cannot view such type of file'}), 403
 
     try:
-        binary_file = dataStoreController.get_binary_file_from_cloud_by_id(file.get_name())
+        binary_file = dataStoreController.get_binary_file_from_cloud_by_id(file_id + "_" + file.get_name())
         return send_file(binary_file, mimetype_dict[file_type])
     except FileNotFoundError:
         return jsonify({'error': 'File is damaged'}), 404

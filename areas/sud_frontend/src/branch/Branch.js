@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import './Branch.css';
-import {add_request, add_branch, delete_branch} from "../api";
+import {add_request, add_branch, delete_branch, view_file, download_file} from "../api";
 import {useParams} from "react-router-dom";
 import {handleWorkspaceAdding} from "../workspaces/UserWorkspaces";
 
@@ -14,11 +14,13 @@ function Branch() {
     const [error, setError] = useState(null);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isViewDocumentOpen, setViewDocumentOpen] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [fileContent, setFileContent] = useState('');
 
     const toggleDialog = () => {
         setIsDialogOpen(!isDialogOpen);
@@ -28,8 +30,71 @@ function Branch() {
         setIsCreateOpen(!isCreateOpen);
     };
 
+
+    const toggleViewDocument = () => {
+        setViewDocumentOpen(!isViewDocumentOpen);
+    };
+
     const toggleConfirm = () => {
         setIsConfirmOpen(!isConfirmOpen);
+    };
+
+    const viewFileById = (document_id) => {
+        fetch(`${API_BASE_URL}/file/${document_id}/view`, {
+            method: 'GET', headers: {
+                'Content-Type': 'application/json',
+            }, credentials: 'include',
+        })
+            .then(async response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const contentType = response.headers.get('Content-Type');
+
+                if (contentType.includes('text/plain')) {
+                    const textData = await response.text();
+                    setFileContent(textData);
+                    toggleViewDocument()
+                } else {
+                    setFileContent("Невозможно просмотреть файл данного типа");
+                }
+            })
+            .catch(error => {
+                setError(error.message);
+            });
+    };
+
+    const downloadFileById = (name, document_id) => {
+        fetch(`${API_BASE_URL}/file/${document_id}/view`, {
+            method: 'GET', headers: {
+                'Content-Type': 'application/json',
+            }, credentials: 'include',
+        })
+            .then(async response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const fileBlob = await response.blob();
+
+                const fileURL = URL.createObjectURL(fileBlob);
+
+                if (response.headers.get('Content-Type').includes('image') ||
+                    response.headers.get('Content-Type').includes('video')) {
+                    // Display it directly.
+                    window.open(fileURL, '_blank', 'noopener,noreferrer');
+                } else {
+                    // For non-displayable files, trigger a download.
+                    const a = document.createElement('a');
+                    a.href = fileURL;
+                    a.download = name;
+                    a.click();
+                    window.URL.revokeObjectURL(a.href); // Clean up the object URL.
+                }
+            })
+            .catch(error => {
+                setError(error.message);
+            });
     };
 
     useEffect(() => {
@@ -79,7 +144,19 @@ function Branch() {
     return (
         <div className="page">
 
-            {/*/ ДИАЛОГ СОЗДАНИЯ  РЕКВКСТА /*/}
+            {/*/ ДИАЛОГ ПРОСМОТРА ФАЙЛА /*/}
+
+            {isViewDocumentOpen && (
+                <div className="dialog-container">
+                    <h3>
+                        Просмотр файла
+                    </h3>
+                    <p>{fileContent}</p>
+                    <button className="add-workspace-button-close" onClick={toggleViewDocument}>Закрыть</button>
+                </div>
+            )}
+
+            {/*/ ДИАЛОГ СОЗДАНИЯ  РЕКВЕСТА /*/}
 
             {isDialogOpen && (
                 <div className="dialog-container">
@@ -131,7 +208,7 @@ function Branch() {
                         />
                     </div>
                     <button className="add-workspace-button"
-                            onClick={() => handleBranchAdding(space_id, title, "-1", branch.id)}>Сохранить
+                            onClick={() => handleBranchAdding(space_id, title, branch.document_id, branch.id)}>Сохранить
                     </button>
                     <button className="add-workspace-button-close" onClick={toggleCreate}>Закрыть</button>
                 </div>
@@ -161,7 +238,7 @@ function Branch() {
                     <h2 className="workspace-title">
                         <span
                             onClick={() => goHome()}
-                            style={{cursor:"pointer"}}
+                            style={{cursor: "pointer"}}
                         >🏠</span> Просмотр ветки
                     </h2>
                     <div className="username-info-right">
@@ -177,13 +254,16 @@ function Branch() {
 
                     <div className="all-workspaces">
                         <div>
-                            {branch.requests != null && branch.requests.length > 0 ? (<ul className="all-workspaces-container">
-                                {branch.requests.map(current_branch => (
-                                    <li onClick={() => goToRequest(space_id, branch_id, current_branch.id)} className="workspace-item"
-                                        key={current_branch.id}> {current_branch.title}</li>))}
-                            </ul>) : (<p className="workspace-item-p">Не найдено реквестов</p>)}
+                            {branch.requests != null && branch.requests.length > 0 ? (
+                                <ul className="all-workspaces-container">
+                                    {branch.requests.map(current_branch => (
+                                        <li onClick={() => goToRequest(space_id, branch_id, current_branch.id)}
+                                            className="workspace-item"
+                                            key={current_branch.id}> {current_branch.title}</li>))}
+                                </ul>) : (<p className="workspace-item-p">Не найдено реквестов</p>)}
 
-                            {branch.parent !== "-1" && <button className="add-workspace" onClick={toggleDialog}><p>+</p></button>}
+                            {branch.parent !== "-1" &&
+                                <button className="add-workspace" onClick={toggleDialog}><p>+</p></button>}
                         </div>
                     </div>
 
@@ -210,11 +290,17 @@ function Branch() {
                                     <p className="request-content"><b>Task ID:</b> {branch.task_id}</p>
                                     <p className="request-content"><b>Document name:</b> {branch.document}</p>
                                     <p className="request-content"><b>Document ID:</b> {branch.document_id}</p>
+
+                                    <button onClick={() => downloadFileById(branch.document, branch.document_id)}>Скачать документ
+                                    </button>
+                                    <button onClick={() => viewFileById(branch.document_id)}>Просмотр</button>
+
                                 </div>
                             </div>
-                            
+
                             <button className="branch-add" onClick={toggleCreate}>Создать ветку</button>
-                            {branch.name !== "master" && <button className="branch-delete" onClick={toggleConfirm}>Удалить</button>}
+                            {branch.name !== "master" &&
+                                <button className="branch-delete" onClick={toggleConfirm}>Удалить</button>}
 
                         </div>) : (<p>Нажмите на рабочее пространство для просмотра</p>)}
                     </div>
@@ -243,7 +329,7 @@ export async function handleBranchAdding(space_id, name, document_id, parent_bra
 
 export async function handleRequestAdding(space_id, title, description, source_branch_id, target_branch_id) {
     try {
-        const response = await add_request({ title, description, source_branch_id, target_branch_id}, space_id);
+        const response = await add_request({title, description, source_branch_id, target_branch_id}, space_id);
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);

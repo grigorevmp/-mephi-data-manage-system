@@ -169,24 +169,14 @@ class DataStoreService:
 
         if item is not None:
             if isinstance(item, Document):
-                result = self.data_store_storage_repo.get_binary_file_from_cloud_by_id(item.get_name())
+                # result = self.data_store_storage_repo.get_binary_file_from_cloud_by_id(item.get_name())
+                result = self.data_store_storage_repo.get_binary_io_file_from_cache(str(item.get_id()) + item.get_name())
                 return [result, item]
         else:
             raise ItemNotFoundError  # pragma: no cover reason: We never get this error
 
     def get_file_by_id(self, user_mail: str, item_id: UUID) -> Document:
-        workspaces = self.get_workspaces(user_mail)
-
-        for workspace in workspaces:
-            branches = self.get_branches_in_workspace(user_mail, workspace.get_id())
-            for branch in branches:
-                document_from_branch = branch.get_document()
-                document_id = branch.document.get_id()
-                if document_from_branch:
-                    if document_id == str(item_id):
-                        return document_from_branch
-
-        raise FileNotFoundError  # pragma: no cover reason: We never get this error
+        return self.data_store_storage_repo.get_document_by_id(user_mail, item_id)
 
     def get_item_in_workspace_by_id(self, user_mail: str, space_id: UUID, item_id: UUID) -> Document:
         workspaces = self.get_workspaces(user_mail)

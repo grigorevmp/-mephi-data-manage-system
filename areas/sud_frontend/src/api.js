@@ -117,6 +117,40 @@ export async function archive_workspace(id) {
     return response.status;
 }
 
+export async function view_file(document_id) {
+    const response = await fetch(`${API_BASE_URL}/file/${document_id}/view`, {
+        method: 'GET', headers: {
+            'Content-Type': 'application/json',
+        }, credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Adding failed');
+    }
+    else {
+        let json = await response.json();
+        return [json, response.status];
+    }
+
+}
+
+export async function download_file(document_id) {
+    const response = await fetch(`${API_BASE_URL}/download/${document_id}`, {
+        method: 'GET', headers: {
+            'Content-Type': 'application/json',
+        }, credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Adding failed');
+    }
+    else {
+        let json = await response.json();
+        return [json, response.status];
+    }
+
+}
+
 export async function add_branch(content, id) {
     const response = await fetch(`${API_BASE_URL}/workspace/${id}/add_branch`, {
         method: 'POST', headers: {
