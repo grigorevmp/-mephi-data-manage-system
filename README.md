@@ -2,6 +2,8 @@
 
 Web application of "Documents storing system" <MEPhI course>
 
+Документация: [Ссылка](https://drive.google.com/drive/folders/1AukKSTJyOsqF0RrInXwdE6wVoAYBvjUo
+
 ## Frontend
 
 Корень: sud_frontend
@@ -74,19 +76,19 @@ Web application of "Documents storing system" <MEPhI course>
 
 🌐🟢 13) `/request/request_id` - Close request
 
-🟢 14) `/request/request_id/merge` - Merge request
+🔴🟢 14) `/request/request_id/merge` - Merge request
 
 🌐🟢 15) `/request/request_id` - Change status of Request
 
 #### Files
 
-🟡 16) `/file` - Add file
+🌐🟢 16) (-> 6) `/workspace/add` - Add file
 
-🟡 17) `/file/<file_id>/view` - View file
+🌐🟢 17) `/file/<file_id>/view` - View file
 
-🟡 18) `/rename/<space_id>/<item_id>` - Rename file
+🌐🟢 18) `/rename/<space_id>/<item_id>` - Rename file
 
-🟡 19) `/download/<item_id>` - Download file
+🌐🟢 19) `/download/<item_id>` - Download file
 
 #### Accesses
 

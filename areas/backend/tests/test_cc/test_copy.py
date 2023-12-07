@@ -25,7 +25,7 @@ class TestCopyController:
             access_key=access_key,
             secret_key=secret_key,
         )
-        client.remove_object("cloudstorage", f"{_id}.jpeg")
+        client.remove_object("sud", f"{_id}.jpeg")
         assert response.status_code == 200
         assert response.text == '{"new_directory":"Bla"}\n'
 
@@ -46,7 +46,7 @@ class TestCopyController:
             access_key=access_key,
             secret_key=secret_key,
         )
-        client.remove_object("cloudstorage", f"{_id}.jpeg")
+        client.remove_object("sud", f"{_id}.jpeg")
         assert response.status_code == 200
 
     def test_copy_negative(self, app_client_user):

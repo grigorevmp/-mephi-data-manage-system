@@ -55,8 +55,8 @@ class DataStoreService:
 
         return name, user_id, space
 
-    def create_workspace(self, user_mail: str, workspace: WorkSpace):
-        return self.data_store_storage_repo.create_workspace(user_mail, workspace)
+    def create_workspace(self, user_mail: str, workspace: WorkSpace, document_name: str, document_data: str):
+        return self.data_store_storage_repo.create_workspace(user_mail, workspace, document_name, document_data)
 
     def get_all_workspaces(self, page: int, limit: int, deleted: bool) -> list[(str, WorkSpace)]:
         workspaces = self.data_store_storage_repo.get_all_workspaces(deleted)
@@ -161,6 +161,11 @@ class DataStoreService:
                                 time=datetime.datetime.now(), _id=uuid.uuid4())
         return self.data_store_storage_repo.add_new_document(workspace, new_document, new_file_data)
 
+    # Create Document
+
+    def update_document(self, user_mail: str, document_id: uuid.UUID, document_name: str, new_file_data: str) -> UUID:
+        return self.data_store_storage_repo.update_document(user_mail, document_id, document_name, new_file_data)
+
     def download_item(self, user_mail: str, item_id: UUID) -> [BinaryIO, Document]:
         try:
             item = self.get_file_by_id(user_mail=user_mail, item_id=item_id)
@@ -169,24 +174,14 @@ class DataStoreService:
 
         if item is not None:
             if isinstance(item, Document):
-                result = self.data_store_storage_repo.get_binary_file_from_cloud_by_id(item.get_name())
+                # result = self.data_store_storage_repo.get_binary_file_from_cloud_by_id(item.get_name())
+                result = self.data_store_storage_repo.get_binary_io_file_from_cache(str(item.get_id()) + item.get_name())
                 return [result, item]
         else:
             raise ItemNotFoundError  # pragma: no cover reason: We never get this error
 
     def get_file_by_id(self, user_mail: str, item_id: UUID) -> Document:
-        workspaces = self.get_workspaces(user_mail)
-
-        for workspace in workspaces:
-            branches = self.get_branches_in_workspace(user_mail, workspace.get_id())
-            for branch in branches:
-                document_from_branch = branch.get_document()
-                document_id = branch.document.get_id()
-                if document_from_branch:
-                    if document_id == str(item_id):
-                        return document_from_branch
-
-        raise FileNotFoundError  # pragma: no cover reason: We never get this error
+        return self.data_store_storage_repo.get_document_by_id(user_mail, item_id)
 
     def get_item_in_workspace_by_id(self, user_mail: str, space_id: UUID, item_id: UUID) -> Document:
         workspaces = self.get_workspaces(user_mail)
@@ -206,14 +201,14 @@ class DataStoreService:
     def get_binary_file_from_cloud_by_id(self, file_name: str) -> Optional[BinaryIO]:
         return self.data_store_storage_repo.get_binary_file_from_cloud_by_id(file_name)
 
-    def rename_item_by_id(self, user_mail: str, space_id: UUID, item_id: UUID, new_name: str):
+    def rename_item_by_id(self, user_mail: str, item_id: UUID, new_name: str):
         try:
-            item = self.get_item_in_workspace_by_id(user_mail, space_id, item_id)
+            item = self.data_store_storage_repo.get_document_by_id(user_mail, item_id)
         except FileNotFoundError:
             raise FileNotFoundError
+
         if item is not None:
-            item.set_name(new_name)
-            self.data_store_storage_repo.edit_item_name(item)
+            self.data_store_storage_repo.rename_file(user_mail, item_id, new_name)
             return item.name
         else:
             return None

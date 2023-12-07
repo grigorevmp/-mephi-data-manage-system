@@ -19,7 +19,6 @@ class Branch:
         self.__author: UUID = author
         self.__parent: UUID = parent
         self.__document: Document = document
-
     def get_id(self) -> UUID:
         return self.__id
 

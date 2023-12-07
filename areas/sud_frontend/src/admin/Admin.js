@@ -153,12 +153,12 @@ function Admin() {
     return (
         <div className="page">
 
-            {/*/ ДИАЛОГ ИЗМЕНЕНИЯ ОТДЕЛА /*/}
+            {/*/ ДИАЛОГ ИЗМЕНЕНИЯ РАБОЧЕГО ПРОСТРАНСТВА /*/}
 
             {isChangeWorkspaceOpen && (
                 <div className="dialog-container">
                     <h3>
-                        Редактировать отдел
+                        Редактировать рабочее пространство
                     </h3>
                     <div className="form-group">
                         <label>
@@ -196,10 +196,10 @@ function Admin() {
             {isChangeUserDepartmentOpen && (
                 <div className="dialog-container">
                     <h3>
-                        Сохранить отдел для пользователя {userName}
+                        Изменить отдел для {userName}
                     </h3>
                     <div className="form-group">
-                        <label htmlFor="name">Заголовок</label>
+                        <label htmlFor="name">Отдел</label>
                         <input
                             type="text"
                             id="name"
@@ -366,7 +366,7 @@ function Admin() {
                                                 setUserName(user.username)
                                                 toggleChangeUserDepartmentDialog()
                                             }}>
-                                                Редактировать отдел
+                                                Изменить отдел
                                             </button>
                                         </li>
                                     </div>

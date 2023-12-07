@@ -1,0 +1,37 @@
+
+version: '3'
+
+services:
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: grigorev.mp
+      MINIO_ROOT_PASSWORD: 12341234
+    command: server --console-address ":9001" /data
+  backend:
+    build:
+      context: ./areas/backend
+      dockerfile: /Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+        - minio
+  ui:
+    build:
+      context: ./areas/sud_frontend
+      dockerfile: /Dockerfile
+    restart: always
+    expose:
+        - "3333"
+    ports:
+        - "3333:3333"
+    depends_on:
+        - backend
+
+volumes:
+  minio_storage: {}

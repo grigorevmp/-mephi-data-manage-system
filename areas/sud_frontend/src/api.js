@@ -117,6 +117,38 @@ export async function archive_workspace(id) {
     return response.status;
 }
 
+export async function view_file(document_id) {
+    const response = await fetch(`${API_BASE_URL}/file/${document_id}/view`, {
+        method: 'GET', headers: {
+            'Content-Type': 'application/json',
+        }, credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Adding failed');
+    } else {
+        let json = await response.json();
+        return [json, response.status];
+    }
+
+}
+
+export async function download_file(document_id) {
+    const response = await fetch(`${API_BASE_URL}/download/${document_id}`, {
+        method: 'GET', headers: {
+            'Content-Type': 'application/json',
+        }, credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Adding failed');
+    } else {
+        let json = await response.json();
+        return [json, response.status];
+    }
+
+}
+
 export async function add_branch(content, id) {
     const response = await fetch(`${API_BASE_URL}/workspace/${id}/add_branch`, {
         method: 'POST', headers: {
@@ -126,12 +158,39 @@ export async function add_branch(content, id) {
 
     if (!response.ok) {
         throw new Error('Adding failed');
-    }
-    else {
+    } else {
         let json = await response.json();
         return [json, response.status];
     }
+}
 
+export async function rename_file(document_id, new_name) {
+    const response = await fetch(`${API_BASE_URL}/rename/${document_id}?new_name=${new_name}`, {
+        method: 'PUT', headers: {
+            'Content-Type': 'application/json',
+        }, credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Adding failed');
+    } else {
+        let json = await response.json();
+        return [json, response.status];
+    }
+}
+
+export async function upload_file(document_id, content) {
+    const response = await fetch(`${API_BASE_URL}/upload_file/${document_id}`, {
+        method: 'POST', headers: {
+            'Content-Type': 'application/json',
+        }, body: JSON.stringify(content), credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Adding failed');
+    }
+
+    return response.status;
 }
 
 export async function delete_branch(space_id, branch_id) {
