@@ -576,14 +576,13 @@ class DataStoreStorageRepository:
 
     def change_workspace_status(self, space_id: uuid.UUID, status: str, user_mail: str | None = None, admin=False):
         if admin or self.is_author_of_workspace(user_mail, space_id):
-            if admin or self.is_author_of_workspace(user_mail, space_id):
-                self.db.session.execute(update(WorkspaceModel).where(WorkspaceModel.id == str(space_id)).values(
-                    status=status
-                ))
-                self.db.session.commit()
-                return None
-            else:
-                raise NotAllowedError()
+            self.db.session.execute(update(WorkspaceModel).where(WorkspaceModel.id == str(space_id)).values(
+                status=status
+            ))
+            self.db.session.commit()
+            return None
+        else:
+            raise NotAllowedError()
 
     def change_workspace_owner(self, space_id: uuid.UUID, owner: uuid.UUID):
         from areas.backend.database.database import UserModel
