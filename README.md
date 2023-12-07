@@ -1,4 +1,4 @@
-# -mephi-data-manage-system
+# Data manage system
 
 Web application of "Documents storing system" <MEPhI course>
 
