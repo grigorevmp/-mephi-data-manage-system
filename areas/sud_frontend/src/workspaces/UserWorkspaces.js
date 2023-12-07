@@ -2,11 +2,13 @@ import React, {useState, useEffect} from 'react';
 import './UserWorkspaces.css';
 import {
     add_department_access,
-    add_email_access, add_url_access,
+    add_email_access,
+    add_url_access,
     add_workspace,
     archive_workspace,
     delete_department_access,
-    delete_email_access, delete_url_access
+    delete_email_access,
+    delete_url_access
 } from "../api";
 
 const API_BASE_URL = 'http://localhost:5000';
@@ -89,10 +91,9 @@ function UserWorkspaces() {
             console.error(e.target.files[0]);
 
             readFileDataAsBase64(e).then(value => {
-                    console.error(value);
-                    setResult(value);
-                }
-            )
+                console.error(value);
+                setResult(value);
+            })
         }
     };
 
@@ -221,283 +222,262 @@ function UserWorkspaces() {
         return <div>Error: {error}</div>;
     }
 
-    return (
-        <div className="page">
+    return (<div className="page">
 
-            {/*/ ДИАЛОГ СОЗДАНИЯ  ВОРКСПЕЙСА /*/}
+        {/*/ ДИАЛОГ СОЗДАНИЯ  ВОРКСПЕЙСА /*/}
 
-            {isDialogOpen && (
-                <div className="dialog-container">
-                    <h3>
-                        Создать рабочее пространство
-                    </h3>
-                    <div className="form-group">
-                        <label htmlFor="title">Заголовок</label>
-                        <input
-                            type="text"
-                            id="title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="description">Описание</label>
-                        <input
-                            type="description"
-                            id="description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="fileUpload">Загрузить файл</label>
-                        <input
-                            type="file"
-                            id="fileUpload"
-                            onChange={handleFileChange}
-                        />
-                    </div>
-                    <button className="add-workspace-button"
-                            onClick={() => handleWorkspaceAdding(title, description, file, result)}>Сохранить
-                    </button>
-                    <button className="add-workspace-button-close" onClick={toggleDialog}>Закрыть</button>
-                </div>
-            )}
+        {isDialogOpen && (<div className="dialog-container">
+            <h3>
+                Создать рабочее пространство
+            </h3>
+            <div className="form-group">
+                <label htmlFor="title">Заголовок</label>
+                <input
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="form-group">
+                <label htmlFor="description">Описание</label>
+                <input
+                    type="description"
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="form-group">
+                <label htmlFor="fileUpload">Загрузить файл</label>
+                <input
+                    type="file"
+                    id="fileUpload"
+                    onChange={handleFileChange}
+                />
+            </div>
+            <button className="add-workspace-button"
+                    onClick={() => handleWorkspaceAdding(title, description, file, result)}>Сохранить
+            </button>
+            <button className="add-workspace-button-close" onClick={toggleDialog}>Закрыть</button>
+        </div>)}
 
-            {/*/ ДИАЛОГ ДОБАВЛЕНИЯ ДОСТУПА ПО ПОЧТЕ/*/}
-            {addUserAccessOpen && (
-                <div className="dialog-container">
-                    <h3>
-                        Добавить доступ для пользователя
-                    </h3>
-                    <div className="form-group">
-                        <label htmlFor="email">Почта пользователя</label>
-                        <input
-                            type="text"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button className="add-workspace-button"
-                            onClick={() => handleAddUserAccessWorkspace(workspace.id, email)}>Сохранить
-                    </button>
-                    <button className="add-workspace-button-close" onClick={toggleAddUserAccessDialog}>Закрыть</button>
-                </div>
-            )}
+        {/*/ ДИАЛОГ ДОБАВЛЕНИЯ ДОСТУПА ПО ПОЧТЕ/*/}
+        {addUserAccessOpen && (<div className="dialog-container">
+            <h3>
+                Добавить доступ для пользователя
+            </h3>
+            <div className="form-group">
+                <label htmlFor="email">Почта пользователя</label>
+                <input
+                    type="text"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
+            </div>
+            <button className="add-workspace-button"
+                    onClick={() => handleAddUserAccessWorkspace(workspace.id, email)}>Сохранить
+            </button>
+            <button className="add-workspace-button-close" onClick={toggleAddUserAccessDialog}>Закрыть</button>
+        </div>)}
 
-            {/*/ ДИАЛОГ ДОБАВЛЕНИЯ ДОСТУПА ПО ОТДЕЛУ/*/}
-            {addDepartmentAccessOpen && (
-                <div className="dialog-container">
-                    <h3>
-                        Добавить доступ для отделу
-                    </h3>
-                    <div className="form-group">
-                        <label htmlFor="email">Имя отдела</label>
-                        <input
-                            type="text"
-                            id="department"
-                            value={department}
-                            onChange={(e) => setDepartment(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button className="add-workspace-button"
-                            onClick={() => handleAddUserAccessWorkspace(workspace.id, department)}>Сохранить
-                    </button>
-                    <button className="add-workspace-button-close" onClick={toggleAddDepartmentAccessDialog}>Закрыть
-                    </button>
-                </div>
-            )}
+        {/*/ ДИАЛОГ ДОБАВЛЕНИЯ ДОСТУПА ПО ОТДЕЛУ/*/}
+        {addDepartmentAccessOpen && (<div className="dialog-container">
+            <h3>
+                Добавить доступ для отделу
+            </h3>
+            <div className="form-group">
+                <label htmlFor="email">Имя отдела</label>
+                <input
+                    type="text"
+                    id="department"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    required
+                />
+            </div>
+            <button className="add-workspace-button"
+                    onClick={() => handleAddUserAccessWorkspace(workspace.id, department)}>Сохранить
+            </button>
+            <button className="add-workspace-button-close" onClick={toggleAddDepartmentAccessDialog}>Закрыть
+            </button>
+        </div>)}
 
-            {/*/ ДИАЛОГ ПОДТВЕРЖЕНИЯ АРХИВИРОВАНИЯ /*/}
+        {/*/ ДИАЛОГ ПОДТВЕРЖЕНИЯ АРХИВИРОВАНИЯ /*/}
 
-            {isConfirmOpen && (
-                <div className="dialog-container">
-                    <h3>
-                        Архивировать рабочее пространство?
-                    </h3>
-                    <button className="workspace-archive-button"
-                            onClick={() => handleWorkspaceArchiving(workspace.id)}>Да
-                    </button>
-                    <button className="workspace-archive-button-close" onClick={toggleConfirm}>Нет</button>
-                </div>
-            )}
+        {isConfirmOpen && (<div className="dialog-container">
+            <h3>
+                Архивировать рабочее пространство?
+            </h3>
+            <button className="workspace-archive-button"
+                    onClick={() => handleWorkspaceArchiving(workspace.id)}>Да
+            </button>
+            <button className="workspace-archive-button-close" onClick={toggleConfirm}>Нет</button>
+        </div>)}
 
-            {/*/ ДИАЛОГ УПРАВЛЕНИЯ ДОСТУПАМИ /*/}
+        {/*/ ДИАЛОГ УПРАВЛЕНИЯ ДОСТУПАМИ /*/}
 
-            {isAccessOpen && (
-                <div className="dialog-container">
-                    <h3>
-                        Настроить доступы
-                    </h3>
+        {isAccessOpen && (<div className="dialog-container">
+            <h3 className="set-up-accesses-title">Настроить доступы</h3>
+            <p>Установить доступы рабочего <br/> пространства для различных категорий </p>
 
-                    {accesses.length > 0 ? (<ul className="all-workspaces-container">
-                        {accesses.map(access => (
-                            <div>
-                                {access.class === "DepartmentAccess" ? (<li
-                                    className="remove-action-button"
-                                    onClick={() => handleDeleteDepartmentAccessWorkspace(workspace.id, access.content)}
-                                >Удалить доступ для отдела {access.content}
-                                </li>) : (<p></p>)}
-                                {access.class === "UserAccess" ? (<li
-                                    className="remove-action-button"
-                                    onClick={() => handleDeleteUserAccessWorkspace(workspace.id, access.content)}
-                                >Удалить доступ для {access.content}</li>) : (<p></p>)}
-                            </div>
-                        ))}
+            <div className="access-action-buttons">
+                {accesses.length > 0 ? (<div>
+                    {accesses.map(access => (<div className="access-action-user-buttons">
+                        {access.class === "DepartmentAccess" ? (<button
+                            className="remove-action-button"
+                            onClick={() => handleDeleteDepartmentAccessWorkspace(workspace.id, access.content)}
+                        >Удалить доступ для отдела {access.content}
+                        </button>) : (<i></i>)}
+                        {access.class === "UserAccess" ? (<button
+                            className="remove-action-button"
+                            onClick={() => handleDeleteUserAccessWorkspace(workspace.id, access.content)}
+                        >Удалить доступ для {access.content}</button>) : (<i></i>)}
+                    </div>))}
 
-                    </ul>) : (<p></p>)}
+                </div>) : (<i/>)}
 
-                    {!accesses.some(access => access.class === "UrlAccess") && (
-                        <button className="access-action-button"
-                                onClick={() => handleAddUrlAccessWorkspace(workspace.id)}>Добавить общий доступ</button>
-                    )}
-                    {accesses.some(access => access.class === "UrlAccess") && (
-                        <button className="remove-action-button"
-                                onClick={() => handleDeleteUrlAccessWorkspace(workspace.id)}>Удалить общий
-                            доступ</button>
-                    )}
+                {!accesses.some(access => access.class === "UrlAccess") && (<button className="access-action-button"
+                                                                                    onClick={() => handleAddUrlAccessWorkspace(workspace.id)}>Добавить
+                    общий
+                    доступ</button>)}
+                {accesses.some(access => access.class === "UrlAccess") && (<button className="remove-action-button"
+                                                                                   onClick={() => handleDeleteUrlAccessWorkspace(workspace.id)}>Удалить
+                    общий
+                    доступ</button>)}
+                <button className="access-action-button" onClick={toggleAddUserAccessDialog}>Добавить доступ
+                    пользователю
+                </button>
+                <button className="access-action-button" onClick={toggleAddDepartmentAccessDialog}>Добавить
+                    доступ
+                    отделу
+                </button>
+            </div>
 
-                    <button className="access-action-button" onClick={toggleAddUserAccessDialog}>Добавить доступ
-                        пользователю
-                    </button>
-                    <button className="access-action-button" onClick={toggleAddDepartmentAccessDialog}>Добавить доступ
-                        отделу
-                    </button>
+            <button className="workspace-archive-button-close" onClick={() => toggleAccess()}>
+                Закрыть
+            </button>
+        </div>)}
 
-                    <button className="workspace-archive-button-close" onClick={() => toggleAccess()}>
-                        Закрыть
-                    </button>
-                </div>
-            )}
+        {/*/ ГЛАВНЫЙ ЭКРАН /*/}
 
-            {/*/ ГЛАВНЫЙ ЭКРАН /*/}
+        <div className="workspaces-container">
 
-            <div className="workspaces-container">
+            {/*/ ЗАГОЛОВОК /*/}
 
-                {/*/ ЗАГОЛОВОК /*/}
-
-                <div className="workspace-title-container">
-                    <h2 className="workspace-title"><span
-                        onClick={() => goHome()}
-                        style={{cursor: "pointer"}}
-                    >🏠</span>Рабочие пространства</h2>
-                    <div className="username-info-right">
-                        <div className="username" onClick={() => goToProfile()}>
-                            <p className="request-content">{username}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="workspace-block">
-
-                    {/*/ ВСЕ ПРОСТРАНСТВА /*/}
-
-                    <div className="all-workspaces">
-                        <div>
-                            {workspaces.length > 0 ? (<ul className="all-workspaces-container">
-                                {workspaces.map(workspace => (
-                                    <li onClick={() => handleWorkspaceClick(workspace.id)} className="workspace-item"
-                                        key={workspace.id}>{workspace.title}</li>))}
-                            </ul>) : (<p className="workspace-item-p">Не найдено рабочих пространств</p>)}
-
-                            {workspaces_access.length > 0 ? (
-                                <ul className="all-workspaces-container">
-                                    <p className="workspace-item-title">Пространства, к которым предоставлен доступ</p>
-                                    {workspaces_access.map(workspace => (
-                                        <li onClick={() => handleWorkspaceClick(workspace.id)}
-                                            className="workspace-item"
-                                            key={workspace.id}>
-                                            {2 === workspace.access_type && <span><b>👤</b> </span>}
-                                            {3 === workspace.access_type && <span><b>👥</b> </span>}
-                                            {workspace.title}
-                                        </li>))}
-                                </ul>) : (<p></p>)}
-
-                            {workspaces_open.length > 0 ? (
-                                <ul className="all-workspaces-container">
-                                    <p className="workspace-item-title">Общедоступные пространства</p>
-                                    {workspaces_open.map(workspace => (
-                                        <li onClick={() => handleWorkspaceClick(workspace.id)}
-                                            className="workspace-item"
-                                            key={workspace.id}>
-                                            {1 === workspace.access_type && <span><b>🔗</b> </span>}
-                                            {workspace.title}
-                                        </li>))}
-                                </ul>) : (<p></p>)}
-
-                            <button className="add-workspace" onClick={toggleDialog}><p>+</p></button>
-                        </div>
-                    </div>
-
-                    {/*/ ТЕКУЩЕЕ ПРОСТРАНСТВО /*/}
-
-                    <div className="all-files-branches">
-                        {workspace !== "" ? (<div>
-                            <div className="request-content-title-container">
-                                <div>
-                                    <h3 className="request-content-title">{workspace.title}</h3>
-                                    <p className="request-content">{workspace.description}</p>
-                                    <p className="request-content"><b>Автор:</b> {workspace.username}</p>
-                                </div>
-                                <div className="info-right">
-                                    <div className="branches-number">
-                                        <p><b>Ветки:</b> {workspace.branches_num}</p>
-                                    </div>
-
-                                    <div className="workspace-status"
-                                         style={{backgroundColor: getStatusColor(workspace.status)}}>
-                                        <p>{STATUS_MAP[workspace.status] || 'Неизвестно'}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <h3>Все ветки</h3>
-                            <div className="all-branches">
-                                {workspace.branches.length > 0 ? (<ul className="all-branches-container">
-                                    {workspace.branches.map(branch => (
-                                        <li
-                                            className="branch-item"
-                                            key={branch.id}
-                                            onClick={() => goToBranch(workspace.id, branch.id)}
-                                        >
-                                            {branch.id === workspace.main_branch && <span><b>🏠</b> </span>}{branch.name}
-                                        </li>
-                                    ))}
-                                </ul>) : (<p>Нет веток</p>)}
-                            </div>
-
-                            <h3>Все реквесты</h3>
-                            <div className="all-request">
-                                {workspace.requests.length > 0 ? (<ul className="all-requests-container">
-                                    {workspace.requests.map(request => (
-                                        <li onClick={() => goToRequest(workspace.id, request.source_branch_id, request.id)}
-                                            className="request-item" key={request.id}>
-                                            <div>{request.title}</div>
-                                            <div>{request.description}</div>
-                                            <div>Статус: {R_STATUS_MAP[request.status] || 'Неизвестный статус'}</div>
-                                        </li>))}
-                                </ul>) : (<p>Нет реквестов.</p>)}
-                            </div>
-
-                            {workspace.username === username ? (
-                                <div className="workspace-action">
-                                    <button className="workspace-access"
-                                            onClick={() => handleAccessesClick(workspace.id)}><p>Доступы</p></button>
-                                    <button className="workspace-archive" onClick={toggleConfirm}><p>Архивировать</p>
-                                    </button>
-                                </div>
-                            ) : (<p></p>)}
-
-                        </div>) : (<p>Нажмите на рабочее пространство для просмотра</p>)}
+            <div className="workspace-title-container">
+                <h2 className="workspace-title"><span
+                    onClick={() => goHome()}
+                    style={{cursor: "pointer"}}
+                >🏠</span>Рабочие пространства</h2>
+                <div className="username-info-right">
+                    <div className="username" onClick={() => goToProfile()}>
+                        <p className="request-content">{username}</p>
                     </div>
                 </div>
             </div>
-        </div>);
+
+            <div className="workspace-block">
+
+                {/*/ ВСЕ ПРОСТРАНСТВА /*/}
+
+                <div className="all-workspaces">
+                    <div>
+                        {workspaces.length > 0 ? (<ul className="all-workspaces-container">
+                            {workspaces.map(workspace => (
+                                <li onClick={() => handleWorkspaceClick(workspace.id)} className="workspace-item"
+                                    key={workspace.id}>{workspace.title}</li>))}
+                        </ul>) : (<p className="workspace-item-p">Не найдено рабочих пространств</p>)}
+
+                        {workspaces_access.length > 0 ? (<ul className="all-workspaces-container">
+                            <p className="workspace-item-title">Пространства, к которым предоставлен доступ</p>
+                            {workspaces_access.map(workspace => (<li onClick={() => handleWorkspaceClick(workspace.id)}
+                                                                     className="workspace-item"
+                                                                     key={workspace.id}>
+                                {2 === workspace.access_type && <span><b>👤</b> </span>}
+                                {3 === workspace.access_type && <span><b>👥</b> </span>}
+                                {workspace.title}
+                            </li>))}
+                        </ul>) : (<p></p>)}
+
+                        {workspaces_open.length > 0 ? (<ul className="all-workspaces-container">
+                            <p className="workspace-item-title">Общедоступные пространства</p>
+                            {workspaces_open.map(workspace => (<li onClick={() => handleWorkspaceClick(workspace.id)}
+                                                                   className="workspace-item"
+                                                                   key={workspace.id}>
+                                {1 === workspace.access_type && <span><b>🔗</b> </span>}
+                                {workspace.title}
+                            </li>))}
+                        </ul>) : (<p></p>)}
+
+                        <button className="add-workspace" onClick={toggleDialog}><p>+</p></button>
+                    </div>
+                </div>
+
+                {/*/ ТЕКУЩЕЕ ПРОСТРАНСТВО /*/}
+
+                <div className="all-files-branches">
+                    {workspace !== "" ? (<div>
+                        <div className="request-content-title-container">
+                            <div>
+                                <h3 className="request-content-title">{workspace.title}</h3>
+                                <p className="request-content">{workspace.description}</p>
+                                <p className="request-content"><b>Автор:</b> {workspace.username}</p>
+                            </div>
+                            <div className="info-right">
+                                <div className="branches-number">
+                                    <p><b>Ветки:</b> {workspace.branches_num}</p>
+                                </div>
+
+                                <div className="workspace-status"
+                                     style={{backgroundColor: getStatusColor(workspace.status)}}>
+                                    <p>{STATUS_MAP[workspace.status] || 'Неизвестно'}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3>Все ветки</h3>
+                        <div className="all-branches">
+                            {workspace.branches.length > 0 ? (<ul className="all-branches-container">
+                                {workspace.branches.map(branch => (<li
+                                    className="branch-item"
+                                    key={branch.id}
+                                    onClick={() => goToBranch(workspace.id, branch.id)}
+                                >
+                                    {branch.id === workspace.main_branch && <span><b>🏠</b> </span>}{branch.name}
+                                </li>))}
+                            </ul>) : (<p>Нет веток</p>)}
+                        </div>
+
+                        <h3>Все реквесты</h3>
+                        <div className="all-request">
+                            {workspace.requests.length > 0 ? (<ul className="all-requests-container">
+                                {workspace.requests.map(request => (
+                                    <li onClick={() => goToRequest(workspace.id, request.source_branch_id, request.id)}
+                                        className="request-item" key={request.id}>
+                                        <div>{request.title}</div>
+                                        <div>{request.description}</div>
+                                        <div>Статус: {R_STATUS_MAP[request.status] || 'Неизвестный статус'}</div>
+                                    </li>))}
+                            </ul>) : (<p>Нет реквестов.</p>)}
+                        </div>
+
+                        {workspace.username === username ? (<div className="workspace-action">
+                            <button className="workspace-access"
+                                    onClick={() => handleAccessesClick(workspace.id)}><p>Доступы</p></button>
+                            <button className="workspace-archive" onClick={toggleConfirm}><p>Архивировать</p>
+                            </button>
+                        </div>) : (<p></p>)}
+
+                    </div>) : (<p>Нажмите на рабочее пространство для просмотра</p>)}
+                </div>
+            </div>
+        </div>
+    </div>);
 }
 
 export async function handleWorkspaceAdding(title, description, file, result) {
@@ -654,9 +634,7 @@ export async function handleDeleteUrlAccessWorkspace(space_id, department) {
 
 function getStatusColor(status) {
     const statusColors = {
-        1: 'green',
-        2: 'gray',
-        3: 'red'
+        1: 'green', 2: 'gray', 3: 'red'
     };
 
     return statusColors[status] || 'white'; // Set your default color here.

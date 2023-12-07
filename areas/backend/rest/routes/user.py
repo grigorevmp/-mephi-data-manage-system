@@ -315,9 +315,6 @@ def add_workspace():
         document_name = request_data['document_name']
         document_data = request_data['document_data'].split("base64,")[1]
 
-        print(document_name)
-        print(document_data)
-
         description = request_data['description']
     except KeyError:
         return jsonify({'error': 'Invalid request body'}), 400
@@ -642,6 +639,7 @@ def view_file_by_id(file_id):
         return jsonify({'error': 'Cannot view such type of file'}), 403
 
     try:
+        print(file_id + "_" + file.get_name())
         binary_file = dataStoreController.get_binary_file_from_cloud_by_id(file_id + "_" + file.get_name())
         return send_file(binary_file, mimetype_dict[file_type])
     except FileNotFoundError:
@@ -860,11 +858,9 @@ def remove_access_by_department(space_id, department):
 
 # FILE CONTROL
 
-# TODO REFACTOR OLD
-# TODO space_id -> branch_id
-@USER_REQUEST_API.route('/rename/<space_id>/<item_id>', methods=['PUT'])
+@USER_REQUEST_API.route('/rename/<item_id>', methods=['PUT'])
 @token_required
-def rename_item(space_id, item_id):
+def rename_item(item_id):
     """
     Path:
         - space_id: id of space with item
@@ -876,7 +872,7 @@ def rename_item(space_id, item_id):
     try:
         if new_name is not None:
             user = get_user_by_token()
-            result = dataStoreController.rename_item(user.email, space_id, item_id, new_name)
+            result = dataStoreController.rename_item(user.email, item_id, new_name)
             if result is not None:
                 return jsonify({'new_name': result}), 200
             else:
@@ -889,7 +885,26 @@ def rename_item(space_id, item_id):
         return jsonify({'error': 'Can\'t find item'}), 404
 
 
-# TODO REFACTOR OLD
+@USER_REQUEST_API.route('/upload_file/<document_id>', methods=['POST'])
+def upload_file(document_id):
+    request_data = request.get_json()
+    try:
+        document_name = request_data['document_name']
+        document_data = request_data['document_data'].split("base64,")[1]
+    except KeyError:
+        return jsonify({'error': 'Invalid request body'}), 400
+
+    try:
+        user = get_user_by_token()
+
+        new_file_id = dataStoreController.update_document(user.email, uuid.UUID(document_id), document_name, document_data)
+    except ItemNotFoundError:
+        return jsonify({'error': 'Incorrect directory'}), 404
+    except NotAllowedError:
+        return jsonify("No access to this space"), 401
+    return jsonify({'id': new_file_id}), 200
+
+
 @USER_REQUEST_API.route('/download/<item_id>', methods=['GET'])
 @token_required
 def download_by_item_id(item_id):

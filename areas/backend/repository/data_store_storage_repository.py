@@ -465,9 +465,7 @@ class DataStoreStorageRepository:
         user: UserModel = UserModel.query.filter_by(email=user_mail).first()
 
         spaces: list[WorkSpace] = self.get_workspaces(user_mail, archived)
-        print(len(spaces))
         for space in spaces:
-            print(space.get_id())
             if str(space.get_id()) == str(space_id):
                 return UserModel.query.filter_by(id=user.id).first().username, user.id, space
 
@@ -792,8 +790,6 @@ class DataStoreStorageRepository:
             raise NotAllowedError()
 
     def add_new_document(self, new_document: Document, new_file_data: str, branch: BranchModel) -> uuid.UUID:
-        print("new_file_data:", new_file_data)
-
         doc = DocumentModel(
             id=str(new_document.get_id()),
             name=new_document.name,
@@ -825,12 +821,69 @@ class DataStoreStorageRepository:
     def get_binary_file_from_cloud_by_id(self, file_name: str) -> BinaryIO:
         return BytesIO(self.get_file_from_cloud(f"{file_name}"))
 
+    def rename_file(self, user_mail, document_id, new_name):
+        branch: BranchModel = BranchModel.query.filter_by(document_id=str(document_id)).first()
+
+        user: UserModel = UserModel.query.filter_by(email=user_mail).first()
+        username, user_id, workspace = self.get_workspace_by_id(user_mail, branch.workspace_id)
+
+        if self.has_access_to_workspace(workspace, user):
+            doc: DocumentModel = DocumentModel.query.filter_by(id=str(document_id)).first()
+
+            document_data = BytesIO(self.get_file_from_cloud(doc.id + "_" + doc.name)).read()
+
+            new_file_data = base64.b64encode(document_data).decode('ascii')
+
+            fn = str(document_id) + "_" + new_name
+
+            self.db.session.execute(update(DocumentModel).where(DocumentModel.id == str(document_id)).values(
+                name=new_name
+            ))
+            self.db.session.commit()
+
+            with open(f'cache/{fn}', "wb") as fh:
+                fh.write(base64.decodebytes(str.encode(new_file_data)))
+
+            self.save_file_to_cloud(fn)
+
+    def update_document(self, user_mail: str, document_id: uuid.UUID, document_name: str, new_file_data: str) -> uuid.UUID:
+        branch: BranchModel = BranchModel.query.filter_by(document_id=str(document_id)).first()
+
+        user: UserModel = UserModel.query.filter_by(email=user_mail).first()
+        username, user_id, workspace = self.get_workspace_by_id(user_mail, branch.workspace_id)
+
+        if self.has_access_to_workspace(workspace, user):
+            new_document_id = uuid.uuid4()
+
+            new_document: DocumentModel = DocumentModel.query.filter_by(id=str(document_id)).first()
+
+            doc = DocumentModel(
+                id=str(new_document_id),
+                name=document_name,
+                task_id=str(new_document.task_id),
+                modification_time=datetime.datetime.now(),
+                file_id=str(new_document.file_id),
+            )
+
+            self.db.session.add(doc)
+
+            self.db.session.execute(update(BranchModel).where(BranchModel.id == str(branch.id)).values(
+                document_id=str(new_document_id)
+            ))
+
+            self.db.session.commit()
+
+            fn = str(doc.id) + "_" + doc.name
+            with open(f'cache/{fn}', "wb") as fh:
+                fh.write(base64.decodebytes(str.encode(new_file_data)))
+
+            self.save_file_to_cloud(fn)
+            return doc.id
+
     @staticmethod
     def get_binary_io_file_from_cache(file_name: str) -> BinaryIO:
         with open(file_name, 'rb') as binary_file:
             file_contents = binary_file.read()
-
-            print(file_contents)
 
             binary_file.seek(0)
 

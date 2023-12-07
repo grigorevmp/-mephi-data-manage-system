@@ -142,9 +142,11 @@ class DataStoreController:
     def get_binary_file_from_cloud_by_id(self, file_name: str):
         return self.data_store_service.get_binary_file_from_cloud_by_id(file_name)
 
-    def rename_item(self, user_mail: str, space_id: UUID, item_id: UUID, new_name: str):
-        return self.data_store_service.rename_item_by_id(space_id=space_id, item_id=item_id, user_mail=user_mail,
-                                                         new_name=new_name)
+    def rename_item(self, user_mail: str, item_id: UUID, new_name: str):
+        return self.data_store_service.rename_item_by_id(item_id=item_id, user_mail=user_mail, new_name=new_name)
+
+    def update_document(self, user_mail: str, document_id: UUID, document_name: str, new_file_data: str) -> UUID:
+        return self.data_store_service.update_document(user_mail, document_id, document_name, new_file_data)
 
     #############
     # LEGACY

@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import './Branch.css';
-import {add_request, add_branch, delete_branch, view_file, download_file} from "../api";
+import {
+    add_request, add_branch, delete_branch, view_file, download_file, rename_file, add_workspace, upload_file
+} from "../api";
 import {useParams} from "react-router-dom";
 import {handleWorkspaceAdding} from "../workspaces/UserWorkspaces";
 
@@ -12,27 +14,70 @@ function Branch() {
     const [branch, setBranch] = useState([]);
     const [username, setUsername] = useState("Anonim");
     const [error, setError] = useState(null);
+    const [file, setFile] = useState();
+    const [result, setResult] = useState(null);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isViewDocumentOpen, setViewDocumentOpen] = useState(false);
+    const [isUploadDocumentOpen, setUploadDocumentOpen] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isRenameDocumentOpen, setRenameDocumentOpen] = useState(false);
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [fileContent, setFileContent] = useState('');
+    const [name, setName] = useState('');
+
+    function readFileDataAsBase64(e) {
+        const file = e.target.files[0];
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                resolve(event.target.result);
+            };
+
+            reader.onerror = (err) => {
+                reject(err);
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const uploadedFile = e.target.files[0];
+            setFile(uploadedFile);
+            console.error(e.target.files[0]);
+
+            readFileDataAsBase64(e).then(value => {
+                console.error(value);
+                setResult(value);
+            })
+        }
+    };
 
     const toggleDialog = () => {
         setIsDialogOpen(!isDialogOpen);
+    };
+
+    const toggleUploadDocumentOpen = () => {
+        setUploadDocumentOpen(!isUploadDocumentOpen);
     };
 
     const toggleCreate = () => {
         setIsCreateOpen(!isCreateOpen);
     };
 
-
     const toggleViewDocument = () => {
         setViewDocumentOpen(!isViewDocumentOpen);
+    };
+
+    const toggleRenameDocumentOpen = () => {
+        setRenameDocumentOpen(!isRenameDocumentOpen);
     };
 
     const toggleConfirm = () => {
@@ -79,8 +124,7 @@ function Branch() {
 
                 const fileURL = URL.createObjectURL(fileBlob);
 
-                if (response.headers.get('Content-Type').includes('image') ||
-                    response.headers.get('Content-Type').includes('video')) {
+                if (response.headers.get('Content-Type').includes('image') || response.headers.get('Content-Type').includes('video')) {
                     // Display it directly.
                     window.open(fileURL, '_blank', 'noopener,noreferrer');
                 } else {
@@ -111,6 +155,7 @@ function Branch() {
             })
             .then(data => {
                 setBranch(data);
+                setName(branch.document);
             })
             .catch(error => {
                 setError(error.message);
@@ -141,173 +186,278 @@ function Branch() {
         return <div>Error: {error}</div>;
     }
 
-    return (
-        <div className="page">
+    return (<div className="page">
 
-            {/*/ ДИАЛОГ ПРОСМОТРА ФАЙЛА /*/}
+        {/*/ ДИАЛОГ ПРОСМОТРА ФАЙЛА /*/}
 
-            {isViewDocumentOpen && (
-                <div className="dialog-container">
-                    <h3>
-                        Просмотр файла
-                    </h3>
-                    <p>{fileContent}</p>
-                    <button className="add-workspace-button-close" onClick={toggleViewDocument}>Закрыть</button>
-                </div>
-            )}
+        {isViewDocumentOpen && (<div className="dialog-container">
+            <h3>
+                Просмотр файла
+            </h3>
+            <p>{fileContent}</p>
+            <button className="add-workspace-button-close" onClick={toggleViewDocument}>Закрыть</button>
+        </div>)}
 
-            {/*/ ДИАЛОГ СОЗДАНИЯ  РЕКВЕСТА /*/}
+        {/*/ ДИАЛОГ СОЗДАНИЯ РЕКВЕСТА /*/}
 
-            {isDialogOpen && (
-                <div className="dialog-container">
-                    <h3>
-                        Создать реквест
-                    </h3>
-                    <div className="form-group">
-                        <label htmlFor="title">Заголовок</label>
-                        <input
-                            type="text"
-                            id="title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="description">Описание</label>
-                        <input
-                            type="description"
-                            id="description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button className="add-workspace-button"
-                            onClick={() => handleRequestAdding(space_id, title, description, branch.id, branch.parent)}>Сохранить
-                    </button>
-                    <button className="add-workspace-button-close" onClick={toggleDialog}>Закрыть</button>
-                </div>
-            )}
+        {isDialogOpen && (<div className="dialog-container">
+            <h3>
+                Создать реквест
+            </h3>
+            <div className="form-group">
+                <label htmlFor="title">Заголовок</label>
+                <input
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="form-group">
+                <label htmlFor="description">Описание</label>
+                <input
+                    type="description"
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                />
+            </div>
+            <button className="add-workspace-button"
+                    onClick={() => handleRequestAdding(space_id, title, description, branch.id, branch.parent)}>Сохранить
+            </button>
+            <button className="add-workspace-button-close" onClick={toggleDialog}>Закрыть</button>
+        </div>)}
 
-            {/*/ ДИАЛОГ СОЗДАНИЯ  ВЕТКИ /*/}
+        {/*/ ДИАЛОГ ПЕРЕИМЕНОВАНИЯ ДОКУМЕНТА /*/}
 
-            {isCreateOpen && (
-                <div className="dialog-container">
-                    <h3>
-                        Создать ветку
-                    </h3>
-                    <div className="form-group">
-                        <label htmlFor="title">Название</label>
-                        <input
-                            type="text"
-                            id="title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button className="add-workspace-button"
-                            onClick={() => handleBranchAdding(space_id, title, branch.document_id, branch.id)}>Сохранить
-                    </button>
-                    <button className="add-workspace-button-close" onClick={toggleCreate}>Закрыть</button>
-                </div>
-            )}
+        {isRenameDocumentOpen && (<div className="dialog-container">
+            <h3>
+                Переименование документа
+            </h3>
+            <div className="form-group">
+                <label htmlFor="name">Имя документа</label>
+                <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                />
+            </div>
+            <button className="add-workspace-button"
+                    onClick={() => handleDocumentRename(branch.document_id, name)}>Сохранить
+            </button>
+            <button className="add-workspace-button-close" onClick={() => {
+                toggleRenameDocumentOpen();
+                setName(branch.document);
+            }}>Закрыть
+            </button>
+        </div>)}
 
-            {/*/ ДИАЛОГ ПОДТВЕРЖЕНИЯ  АРХИВИРОВАНИЯ /*/}
+        {/*/ ДИАЛОГ ЗАГРУЗКИ ФАЙЛА ДОКУМЕНТА /*/}
 
-            {isConfirmOpen && (
-                <div className="dialog-container">
-                    <h3>
-                        Удалить ветку?
-                    </h3>
-                    <button className="branch-delete-button"
-                            onClick={() => handleBranchDeletion(space_id, branch.id, branch.parent)}>Да
-                    </button>
-                    <button className="branch-delete-button-close" onClick={toggleConfirm}>Нет</button>
-                </div>
-            )}
+        {isUploadDocumentOpen && (<div className="dialog-container">
+            <h3>
+                Загрузить новый документ
+            </h3>
 
-            {/*/ ГЛАВНЫЙ ЭКРАН /*/}
+            <div className="form-group">
+                <label htmlFor="fileUpload">Загрузить файл</label>
+                <input
+                    type="file"
+                    id="fileUpload"
+                    onChange={handleFileChange}
+                />
+            </div>
+            <button className="add-workspace-button"
+                    onClick={() => handleUploadFile(branch.document_id, file, result)}>Сохранить
+            </button>
+            <button className="add-workspace-button-close" onClick={() => {
+                toggleUploadDocumentOpen();
+                setName(branch.document);
+            }}>Закрыть
+            </button>
+        </div>)}
 
-            <div className="workspaces-container">
+        {/*/ ДИАЛОГ СОЗДАНИЯ  ВЕТКИ /*/}
 
-                {/*/ ЗАГОЛОВОК /*/}
+        {isCreateOpen && (<div className="dialog-container">
+            <h3>
+                Создать ветку
+            </h3>
+            <div className="form-group">
+                <label htmlFor="title">Название</label>
+                <input
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                />
+            </div>
+            <button className="add-workspace-button"
+                    onClick={() => handleBranchAdding(space_id, title, branch.document_id, branch.id)}>Сохранить
+            </button>
+            <button className="add-workspace-button-close" onClick={toggleCreate}>Закрыть</button>
+        </div>)}
 
-                <div className="workspace-title-container">
-                    <h2 className="workspace-title">
+        {/*/ ДИАЛОГ ПОДТВЕРЖЕНИЯ  АРХИВИРОВАНИЯ /*/}
+
+        {isConfirmOpen && (<div className="dialog-container">
+            <h3>
+                Удалить ветку?
+            </h3>
+            <button className="branch-delete-button"
+                    onClick={() => handleBranchDeletion(space_id, branch.id, branch.parent)}>Да
+            </button>
+            <button className="branch-delete-button-close" onClick={toggleConfirm}>Нет</button>
+        </div>)}
+
+        {/*/ ГЛАВНЫЙ ЭКРАН /*/}
+
+        <div className="workspaces-container">
+
+            {/*/ ЗАГОЛОВОК /*/}
+
+            <div className="workspace-title-container">
+                <h2 className="workspace-title">
                         <span
                             onClick={() => goHome()}
                             style={{cursor: "pointer"}}
                         >🏠</span> Просмотр ветки
-                    </h2>
-                    <div className="username-info-right">
-                        <div className="username" onClick={() => goToProfile()}>
-                            <p className="request-content">{username}</p>
-                        </div>
+                </h2>
+                <div className="username-info-right">
+                    <div className="username" onClick={() => goToProfile()}>
+                        <p className="request-content">{username}</p>
                     </div>
                 </div>
-
-                <div className="workspace-block">
-
-                    {/*/ ВСЕ ПРОСТРАНСТВА /*/}
-
-                    <div className="all-workspaces">
-                        <div>
-                            {branch.requests != null && branch.requests.length > 0 ? (
-                                <ul className="all-workspaces-container">
-                                    {branch.requests.map(current_branch => (
-                                        <li onClick={() => goToRequest(space_id, branch_id, current_branch.id)}
-                                            className="workspace-item"
-                                            key={current_branch.id}> {current_branch.title}</li>))}
-                                </ul>) : (<p className="workspace-item-p">Не найдено реквестов</p>)}
-
-                            {branch.parent !== "-1" &&
-                                <button className="add-workspace" onClick={toggleDialog}><p>+</p></button>}
-                        </div>
-                    </div>
-
-                    {/*/ ТЕКУЩЕЕ ПРОСТРАНСТВО /*/}
-
-                    <div className="all-files-branches">
-                        {branch !== "" ? (<div>
-                            <div className="request-content-title-container">
-                                <div>
-                                    <h3 className="request-content-title">{branch.parent === "-1" &&
-                                        <span><b>🏠</b> </span>} {branch.name}</h3>
-                                    <p className="request-content"><b>Автор ветки: </b>{branch.authorName}</p>
-                                    {branch.parent !== "-1" &&
-                                        <p className="request-content">
-                                            <b>Исходная ветка: </b>
-                                            <p
-                                                className="original-branch-item"
-                                                onClick={() => goToBranch(space_id, branch.parent)}
-                                            >
-                                                {branch.parentName}
-                                            </p>
-                                        </p>
-                                    }
-                                    <p className="request-content"><b>Task ID:</b> {branch.task_id}</p>
-                                    <p className="request-content"><b>Document name:</b> {branch.document}</p>
-                                    <p className="request-content"><b>Document ID:</b> {branch.document_id}</p>
-
-                                    <button onClick={() => downloadFileById(branch.document, branch.document_id)}>Скачать документ
-                                    </button>
-                                    <button onClick={() => viewFileById(branch.document_id)}>Просмотр</button>
-
-                                </div>
-                            </div>
-
-                            <button className="branch-add" onClick={toggleCreate}>Создать ветку</button>
-                            {branch.name !== "master" &&
-                                <button className="branch-delete" onClick={toggleConfirm}>Удалить</button>}
-
-                        </div>) : (<p>Нажмите на рабочее пространство для просмотра</p>)}
-                    </div>
-                </div>
-
             </div>
-        </div>);
+
+            <div className="workspace-block">
+
+                {/*/ ВСЕ ПРОСТРАНСТВА /*/}
+
+                <div className="all-workspaces">
+                    <div>
+                        {branch.requests != null && branch.requests.length > 0 ? (
+                            <ul className="all-workspaces-container">
+                                {branch.requests.map(current_branch => (
+                                    <li onClick={() => goToRequest(space_id, branch_id, current_branch.id)}
+                                        className="workspace-item"
+                                        key={current_branch.id}> {current_branch.title}</li>))}
+                            </ul>) : (<p className="workspace-item-p">Не найдено реквестов</p>)}
+
+                        {branch.parent !== "-1" &&
+                            <button className="add-workspace" onClick={toggleDialog}><p>+</p></button>}
+                    </div>
+                </div>
+
+                {/*/ ТЕКУЩЕЕ ПРОСТРАНСТВО /*/}
+
+                <div className="all-files-branches">
+                    {branch !== "" ? (<div>
+                        <div className="request-content-title-container">
+                            <div>
+                                <h3 className="request-content-title">{branch.parent === "-1" &&
+                                    <span><b>🏠</b> </span>} {branch.name}</h3>
+                                <p className="request-content"><b>Автор ветки: </b>{branch.authorName}</p>
+                                {branch.parent !== "-1" && <p className="request-content">
+                                    <b>Исходная ветка: </b>
+                                    <p
+                                        className="original-branch-item"
+                                        onClick={() => goToBranch(space_id, branch.parent)}
+                                    >
+                                        {branch.parentName}
+                                    </p>
+                                </p>}
+
+                                <p className="request-content"><b>Привязанная задача:</b> {branch.task_id}</p>
+
+                                <div className="document-action-block">
+                                    <p className="request-content document-name-title"><b>Имя:</b> {branch.document}</p>
+                                    <p className="request-content"><b>Идентификатор:</b> {branch.document_id}</p>
+                                    <br/>
+                                    <button
+                                        className="document-action-bottom"
+                                        onClick={() => downloadFileById(branch.document, branch.document_id)}>Скачать
+                                    </button>
+                                    <button
+                                        className="document-action-bottom" onClick={toggleUploadDocumentOpen}>Загрузить</button>
+                                    <br/>
+                                    <button
+                                        className="document-action-bottom" onClick={() => viewFileById(branch.document_id)}>Просмотр</button>
+                                    <button
+                                        className="document-action-bottom" onClick={() => {
+                                        setName(branch.document)
+                                        toggleRenameDocumentOpen()
+                                    }}>Переименовать
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <button className="branch-add" onClick={toggleCreate}>Создать ветку</button>
+                        {branch.name !== "master" &&
+                            <button className="branch-delete" onClick={toggleConfirm}>Удалить</button>}
+
+                    </div>) : (<p>Нажмите на рабочее пространство для просмотра</p>)}
+                </div>
+            </div>
+
+        </div>
+    </div>);
+}
+
+export async function handleUploadFile(id, file, result) {
+    console.error(file);
+    console.error(file.name);
+    // const document_data = new FormData();
+    // document_data.append(file.name, file, file.name);
+    const document_name = file.name
+
+    // This result contains the bytestring data of the file
+    const document_data = result;
+
+    // Convert it to a UInt8Array if necessary
+    // const bytes = new Uint8Array(arrayBuffer);
+    //
+    // // Or directly create a Blob if you're going to use formData
+    // const document_data = new Blob([arrayBuffer], {type: file.type});
+
+    try {
+        const response = await upload_file(id, {document_name, document_data});
+
+        if (response === 200) {
+            localStorage.setItem('authToken', response.token);
+
+            window.location.reload();
+            console.error('Registration was successful, token provided in the response.');
+        } else {
+            console.error('Registration was unsuccessful, no token provided in the response.');
+        }
+    } catch (error) {
+        console.error('An error occurred during login:', error);
+    }
+}
+
+export async function handleDocumentRename(document_id, new_name) {
+    try {
+        const response = await rename_file(document_id, new_name);
+
+        if (response[1] === 200) {
+            localStorage.setItem('authToken', response.token);
+            window.location.reload();
+
+            console.error('Registration was successful, token provided in the response.');
+        } else {
+            console.error('Registration was unsuccessful, no token provided in the response.');
+        }
+    } catch (error) {
+        console.error('An error occurred during login:', error);
+    }
 }
 
 export async function handleBranchAdding(space_id, name, document_id, parent_branch_id) {

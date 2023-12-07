@@ -161,6 +161,11 @@ class DataStoreService:
                                 time=datetime.datetime.now(), _id=uuid.uuid4())
         return self.data_store_storage_repo.add_new_document(workspace, new_document, new_file_data)
 
+    # Create Document
+
+    def update_document(self, user_mail: str, document_id: uuid.UUID, document_name: str, new_file_data: str) -> UUID:
+        return self.data_store_storage_repo.update_document(user_mail, document_id, document_name, new_file_data)
+
     def download_item(self, user_mail: str, item_id: UUID) -> [BinaryIO, Document]:
         try:
             item = self.get_file_by_id(user_mail=user_mail, item_id=item_id)
@@ -196,14 +201,14 @@ class DataStoreService:
     def get_binary_file_from_cloud_by_id(self, file_name: str) -> Optional[BinaryIO]:
         return self.data_store_storage_repo.get_binary_file_from_cloud_by_id(file_name)
 
-    def rename_item_by_id(self, user_mail: str, space_id: UUID, item_id: UUID, new_name: str):
+    def rename_item_by_id(self, user_mail: str, item_id: UUID, new_name: str):
         try:
-            item = self.get_item_in_workspace_by_id(user_mail, space_id, item_id)
+            item = self.data_store_storage_repo.get_document_by_id(user_mail, item_id)
         except FileNotFoundError:
             raise FileNotFoundError
+
         if item is not None:
-            item.set_name(new_name)
-            self.data_store_storage_repo.edit_item_name(item)
+            self.data_store_storage_repo.rename_file(user_mail, item_id, new_name)
             return item.name
         else:
             return None
