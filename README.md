@@ -2,7 +2,7 @@
 
 Web application of "Documents storing system" <MEPhI course>
 
-Документация: [Ссылка](https://drive.google.com/drive/folders/1AukKSTJyOsqF0RrInXwdE6wVoAYBvjUo
+Документация: [Ссылка](https://drive.google.com/drive/folders/1AukKSTJyOsqF0RrInXwdE6wVoAYBvjUo)
 
 ## Frontend
 
