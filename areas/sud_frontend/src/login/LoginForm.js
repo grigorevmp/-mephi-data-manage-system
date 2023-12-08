@@ -53,7 +53,7 @@ export async function handleLogin(email, password) {
             localStorage.setItem('authToken', response.token);
 
             window.location.href = '/workspaces'; // Redirect to the workspaces page
-            // Show the user's workspaces, assuming Branch() renders the required content
+            // Show the user's workspaces, assuming Search() renders the required content
             console.error('Login was successful, no token provided in the response.');
         } else {
             // If the response doesn't contain a token, let's log an error

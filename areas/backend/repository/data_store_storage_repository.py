@@ -80,6 +80,36 @@ class DataStoreStorageRepository:
     #############
     # WORKSPACES
     #############
+    def get_workspaces_document_by_name(self, user_mail: str, document_name: str) -> list[tuple[Document, str, str]]:
+        all_spaces: list[WorkSpace] = self.get_workspaces(user_mail, False)
+        print("----", document_name)
+
+        for (space, access) in self.get_workspaces_access(user_mail):
+            all_spaces.append(space)
+
+        all_documents: list[tuple[Document, str, str]] = []
+
+        for space in all_spaces:
+            branches: list[Branch] = space.branches
+
+            for branch in branches:
+                if branch.document is not None:
+                    documentModel: DocumentModel = DocumentModel.query.filter_by(id=branch.document.get_id()).first()
+                    print(str(documentModel.name))
+
+                    if (documentModel.name in document_name) or (document_name in documentModel.name):
+                        branch: BranchModel = BranchModel.query.filter_by(document_id=str(documentModel.id)).first()
+                        document = Document(
+                            name=documentModel.name,
+                            task_id=documentModel.task_id,
+                            file=documentModel.file_id,
+                            time=documentModel.modification_time,
+                            _id=documentModel.id,
+                        )
+
+                        all_documents.append((document, branch.id, str(space.get_id())))
+
+        return all_documents
 
     @staticmethod
     def get_workspaces(user_mail: str, archived: bool = False) -> list[WorkSpace]:

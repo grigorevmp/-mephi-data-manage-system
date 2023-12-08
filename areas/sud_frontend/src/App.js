@@ -10,6 +10,7 @@ import WhoIAm from "./whoiam/WhoIAm";
 import Branch from "./branch/Branch";
 import Request from "./request/Request";
 import Admin from "./admin/Admin";
+import Search from "./search/Search";
 
 function App() {
     return (
@@ -22,12 +23,13 @@ function App() {
                         <Route exact path="/me" element={<WhoIAm/>}/>
                         <Route exact path="/admin" element={<Admin/>}/>
                         <Route exact path="/branch/:space_id/:branch_id" element={<Branch/>}/>
+                        <Route exact path="/search/:name" element={<Search/>}/>
                         <Route exact path="/request/:space_id/:branch_id/:request_id" element={<Request/>}/>
                         <Route exact path="/registration"
                                element={<RegistrationForm onRegistration={handleRegistration}/>}
                         />
 
-                        <Route path="*" element={<Navigate to="/login" replace />} />
+                        <Route path="*" element={<Navigate to="/login" replace/>}/>
                     </Routes>
                 </Fragment>
             </Router>

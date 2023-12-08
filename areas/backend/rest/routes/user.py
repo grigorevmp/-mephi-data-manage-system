@@ -97,17 +97,17 @@ def search_for():
 
     # query date
     user = get_user_by_token()
-    query = request.args.get('query', default=".", type=str)
+    name = request.args.get('name', default=".", type=str)
 
-    items: list[tuple[Document, str]] = dataStoreController.search_in_cloud(user.email, query)
+    items: list[tuple[Document, str, str]] = dataStoreController.search_in_cloud(user.email, name)
     items_content = []
-    for (item, path) in items:
+    for item, branch_id, space_id in items:
         items_content.append(
             {
                 "name": item.name,
-                "path": path,
-                "type": item.__class__.__name__,
-                "id": str(item.id)
+                "id": str(item.get_id()),
+                "branch_id": branch_id,
+                "space_id": space_id,
             }
         )
 

@@ -19,17 +19,15 @@ class DataStoreService:
         self.data_store_storage_repo = DataStoreStorageRepository()
 
     #############
-    # SEARCH TODO Это на рефактор
+    # SEARCH
     #############
 
-    # def search_in_cloud(self, user_mail: str, query: str) -> list[tuple[BaseStorageItem, str]]:
-    #     """
-    #     @param user_mail: user email
-    #     @param query: query
-    #     """
-    #     space_manager: SpaceManager = self.data_store_storage_repo.get_root_dir_by_user_mail(user_mail)
-    #     founded_items: list[tuple[BaseStorageItem, str]] = self.search_in_spaces(space_manager, query)
-    #     return founded_items
+    def search_in_cloud(self, user_mail: str, document_name: str) -> list[tuple[Document, str, str]]:
+        """
+        @param user_mail: user email
+        @param document_name: query name
+        """
+        return self.data_store_storage_repo.get_workspaces_document_by_name(user_mail, document_name)
 
     #############
     # WORKSPACES

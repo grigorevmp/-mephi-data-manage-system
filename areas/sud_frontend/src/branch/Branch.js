@@ -354,7 +354,7 @@ function Branch() {
                     </div>
                 </div>
 
-                {/*/ ТЕКУЩЕЕ ПРОСТРАНСТВО /*/}
+                {/*/ ТЕКУЩАЯ ВЕТКА /*/}
 
                 <div className="all-files-branches">
                     {branch !== "" ? (<div>

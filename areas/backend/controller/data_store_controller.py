@@ -41,8 +41,7 @@ class DataStoreController:
     # SEARCH
     #############
 
-    # TODO UPDATE
-    def search_in_cloud(self, user_mail: str, file_name: str) -> list[tuple[Document, str]]:
+    def search_in_cloud(self, user_mail: str, file_name: str) -> list[tuple[Document, str, str]]:
         return self.data_store_service.search_in_cloud(user_mail, file_name)
 
     #############

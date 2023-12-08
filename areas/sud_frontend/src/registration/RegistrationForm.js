@@ -65,7 +65,7 @@ export async function handleRegistration(email, password, username, role) {
             localStorage.setItem('authToken', response.token);
 
             window.location.href = '/login'; // Redirect to the workspaces page
-            // Show the user's workspaces, assuming Branch() renders the required content
+            // Show the user's workspaces, assuming Search() renders the required content
             console.error('Registration was successful, token provided in the response.');
         } else {
             // If the response doesn't contain a token, let's log an error

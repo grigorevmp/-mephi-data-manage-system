@@ -15,6 +15,7 @@ const API_BASE_URL = 'http://localhost:5000';
 
 function UserWorkspaces() {
     const [workspace, setWorkspace] = useState("");
+    const [search, setSearch] = useState("Поиск");
     const [workspaces, setWorkspaces] = useState([]);
     const [workspaces_access, setWorkspaces_access] = useState([]);
     const [workspaces_open, setWorkspaces_open] = useState([]);
@@ -374,6 +375,22 @@ function UserWorkspaces() {
                     onClick={() => goHome()}
                     style={{cursor: "pointer"}}
                 >🏠</span>Рабочие пространства</h2>
+
+                <input
+                    type="text"
+                    id="search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                            goToSearch(search)
+
+                        }
+                    }
+                    }
+                    required
+                />
+
                 <div className="username-info-right">
                     <div className="username" onClick={() => goToProfile()}>
                         <p className="request-content">{username}</p>
@@ -650,6 +667,10 @@ function goToProfile() {
 
 function goToBranch(spaceId, branchId) {
     window.location.href = `/branch/${spaceId}/${branchId}`;
+}
+
+function goToSearch(name) {
+    window.location.href = `/search/${name}`;
 }
 
 function goToRequest(space_id, branch_id, request_id) {
