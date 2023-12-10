@@ -62,7 +62,7 @@ class DataStoreService:
         workspaces = self.data_store_storage_repo.get_all_workspaces(deleted)
         output_list = []
         start_index = (page - 1) * limit
-        end_index = min(len(workspaces), start_index + limit)
+        end_index = min(len(workspaces), start_index + limit) if limit != 0 else len(workspaces)
         for index in range(start_index, end_index):
             output_list.append(workspaces[index])
         return output_list

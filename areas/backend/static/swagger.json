@@ -1621,6 +1621,36 @@
         }
       }
     },
+    "/user/{user_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "ID of user to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "AdminRequest"
+        ],
+        "summary": "Delete users from DB",
+        "responses": {
+          "400": {
+            "description": "Bad data"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/download/{item_id}": {
       "get": {
         "parameters": [

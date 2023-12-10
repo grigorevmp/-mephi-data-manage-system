@@ -199,3 +199,13 @@ class UserRepository:
 
     def get_root_user_space_content(self, user_email: str):
         return self.data_storage_repo.get_root_user_space_content(user_email)
+
+    @staticmethod
+    def delete_user(user_id: UUID):
+        from areas.backend.exceptions.exceptions import UserNotFoundError
+        from areas.backend.database.database import UserModel
+        user: UserModel = UserModel.query.filter_by(id=str(user_id)).first()
+        if user is None:
+            raise UserNotFoundError
+        UserModel.query.filter_by(id=str(user_id)).delete()
+        db.session.commit()

@@ -395,7 +395,10 @@ class DataStoreStorageRepository:
             WorkspaceModel.status != WorkSpaceStatus.Deleted.value
         ).all() if not deleted else WorkspaceModel.query.all()
         workspaces_list = [
-            (UserModel.query.filter_by(id=workspace.user_id).first().username, workspace.user_id, WorkSpace(
+            (UserModel.query.filter_by(id=workspace.user_id).first().username if
+                UserModel.query.filter_by(id=workspace.user_id).first() is not None else "Deleted user!",
+             workspace.user_id,
+             WorkSpace(
                 title=workspace.title,
                 description=workspace.description,
                 branches=[],

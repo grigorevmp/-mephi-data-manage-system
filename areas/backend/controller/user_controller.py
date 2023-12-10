@@ -1,5 +1,7 @@
 from typing import List
 
+from uuid import UUID
+
 from areas.backend.core.department import Department
 from areas.backend.core.role import Role
 from areas.backend.core.user import User
@@ -43,3 +45,6 @@ class UserController:
 
     def delete_users_from_department(self, department_name: str, users: List[str]) -> Department:
         return self.user_service.delete_users_from_department(department_name, users)
+
+    def delete_user(self, user_id: UUID):
+        self.user_service.delete_user(user_id)
