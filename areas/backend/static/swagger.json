@@ -265,7 +265,9 @@
               },
               "example": {
                 "title": "Test",
-                "description": "Description"
+                "description": "Description",
+                "document_name": "Test document name",
+                "document_data": "data:@file/plain;base64,VGVzdCBkb2N1bWVudA=="
               }
             }
           }
@@ -1997,6 +1999,12 @@
             "type": "string"
           },
           "description": {
+            "type": "string"
+          },
+          "document_name": {
+            "type": "string"
+          },
+          "document_data": {
             "type": "string"
           }
         }
