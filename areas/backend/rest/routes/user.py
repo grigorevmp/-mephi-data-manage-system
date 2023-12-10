@@ -486,6 +486,65 @@ def add_request_for_branch(space_id):
     return jsonify({'id': new_file_id}), 200
 
 
+@USER_REQUEST_API.route('/workspace/<space_id>/copy/<branch_id>', methods=['POST'])
+def copy_document(space_id, branch_id):
+    # Getting information about old branch
+    user = get_user_by_token()
+
+    try:
+        (item, _, _, _) = dataStoreController.get_branch_in_workspace_by_id(
+            user.email, uuid.UUID(space_id),
+            uuid.UUID(branch_id)
+        )
+
+        copy_name = item.document.name.split(".") if item.document is not None else ""
+        copy_name[-2] += '_copy'
+        copy_name = '.'.join(copy_name)
+
+        doc_id = str(item.document.get_id())
+        doc_name = item.document.name
+        doc_full_name = doc_id + '_' + doc_name
+        try:
+            file: Optional[Document] = dataStoreController.get_base64_file_from_cloud_by_id(doc_full_name)
+        except FileNotFoundError:
+            return jsonify({'error': 'File not found'}), 404
+
+        item = {
+            "document": copy_name,
+            "file": file if item.document is not None else "",
+        }
+    except SpaceNotFoundError:
+        return jsonify("Can't find space with ID"), 404
+    except NotAllowedError:
+        return jsonify("No access to this space"), 401
+
+    request_data = request.get_json()
+    try:
+        title = request_data['title']
+        description = request_data['description']
+    except KeyError:
+        return jsonify({'error': 'Invalid request body'}), 400
+
+    try:
+        user = get_user_by_token()
+
+        workspace = WorkSpace(
+            title=title,
+            description=description,
+            branches=[],
+            requests=[],
+            accesses=[],
+            main_branch=None,
+            status=WorkSpaceStatus.Active.value,
+        )
+        new_workspace = dataStoreController.create_workspace(user.email, workspace, item['document'], item["file"])
+    except ItemNotFoundError:
+        return jsonify({'error': 'Incorrect directory'}), 404
+    except NotAllowedError:
+        return jsonify("No access to this space"), 401
+    return jsonify({'id': new_workspace}), 200
+
+
 """
     ===================
     Block with Request

@@ -201,6 +201,9 @@ class DataStoreService:
     def get_binary_file_from_cloud_by_id(self, file_name: str) -> Optional[BinaryIO]:
         return self.data_store_storage_repo.get_binary_file_from_cloud_by_id(file_name)
 
+    def get_base64_file_from_cloud_by_id(self, file_name: str) -> Optional[str]:
+        return self.data_store_storage_repo.get_base64_file_from_cloud_by_id(file_name)
+
     def rename_item_by_id(self, user_mail: str, item_id: UUID, new_name: str):
         try:
             item = self.data_store_storage_repo.get_document_by_id(user_mail, item_id)
