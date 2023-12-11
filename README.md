@@ -30,7 +30,7 @@ Web application of "Documents storing system" <MEPhI course>
 
 🌐🟢  7) `/users` - Get user list
 
-🟢  8) `[DELETE] /user/<user_id>` - Delete user
+🌐🟢  8) `[DELETE] /user/<user_id>` - Delete user
 
 🌐🟢 9) `/all_workspaces` - All workspace for users
 
@@ -74,7 +74,7 @@ Web application of "Documents storing system" <MEPhI course>
 
 🌐🟢 11) `/branch/branch_id/request` - Create pull request [ACCESS: Author]
 
-🟢 12) `/workspace/<space_id>/copy/<branch_id>` - Copy document to own workspace
+🌐🟢 12) `/workspace/<space_id>/copy/<branch_id>` - Copy document to own workspace
 
 #### Requests
 
