@@ -60,7 +60,7 @@ class DataStoreService:
         workspaces = self.data_store_storage_repo.get_all_workspaces(deleted)
         output_list = []
         start_index = (page - 1) * limit
-        end_index = min(len(workspaces), start_index + limit)
+        end_index = min(len(workspaces), start_index + limit) if limit != 0 else len(workspaces)
         for index in range(start_index, end_index):
             output_list.append(workspaces[index])
         return output_list
@@ -198,6 +198,9 @@ class DataStoreService:
 
     def get_binary_file_from_cloud_by_id(self, file_name: str) -> Optional[BinaryIO]:
         return self.data_store_storage_repo.get_binary_file_from_cloud_by_id(file_name)
+
+    def get_base64_file_from_cloud_by_id(self, file_name: str) -> Optional[str]:
+        return self.data_store_storage_repo.get_base64_file_from_cloud_by_id(file_name)
 
     def rename_item_by_id(self, user_mail: str, item_id: UUID, new_name: str):
         try:

@@ -96,3 +96,6 @@ class UserService:
     def delete_users_from_department(self, department_name: str, users: List[str]) -> Department:
         new_department = self.user_repo.delete_users_from_department(department_name, users)
         return new_department
+
+    def delete_user(self, user_id: UUID):
+        self.user_repo.delete_user(user_id)

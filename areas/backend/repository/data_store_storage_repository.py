@@ -425,7 +425,10 @@ class DataStoreStorageRepository:
             WorkspaceModel.status != WorkSpaceStatus.Deleted.value
         ).all() if not deleted else WorkspaceModel.query.all()
         workspaces_list = [
-            (UserModel.query.filter_by(id=workspace.user_id).first().username, workspace.user_id, WorkSpace(
+            (UserModel.query.filter_by(id=workspace.user_id).first().username if
+                UserModel.query.filter_by(id=workspace.user_id).first() is not None else "Deleted user!",
+             workspace.user_id,
+             WorkSpace(
                 title=workspace.title,
                 description=workspace.description,
                 branches=[],
@@ -849,6 +852,10 @@ class DataStoreStorageRepository:
 
     def get_binary_file_from_cloud_by_id(self, file_name: str) -> BinaryIO:
         return BytesIO(self.get_file_from_cloud(f"{file_name}"))
+
+    def get_base64_file_from_cloud_by_id(self, file_name: str) -> str:
+        document_data = BytesIO(self.get_file_from_cloud(f"{file_name}")).read()
+        return base64.b64encode(document_data).decode('ascii')
 
     def rename_file(self, user_mail, document_id, new_name):
         branch: BranchModel = BranchModel.query.filter_by(document_id=str(document_id)).first()

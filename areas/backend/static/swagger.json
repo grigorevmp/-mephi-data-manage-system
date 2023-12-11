@@ -265,7 +265,9 @@
               },
               "example": {
                 "title": "Test",
-                "description": "Description"
+                "description": "Description",
+                "document_name": "test_document_name.txt",
+                "document_data": "data:@file/plain;base64,VGVzdCBkb2N1bWVudA=="
               }
             }
           }
@@ -491,6 +493,68 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/branch_item_view"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workspace/{space_id}/copy/{branch_id}": {
+      "post": {
+        "parameters": [
+          {
+            "name": "space_id",
+            "in": "path",
+            "description": "Workspace id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branch_id",
+            "in": "path",
+            "description": "Branch id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/new_workspace"
+              },
+              "example": {
+                "title": "Test",
+                "description": "0"
+              }
+            }
+          }
+        },
+        "tags": [
+          "UserRequest"
+        ],
+        "summary": "Creates new workspace with copy of specified branch",
+        "responses": {
+          "400": {
+            "description": "Failed. Bad post data."
+          },
+          "401": {
+            "description": "Not allowed"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/new_workspace"
                 }
               }
             }
@@ -1621,6 +1685,36 @@
         }
       }
     },
+    "/user/{user_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "ID of user to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "tags": [
+          "AdminRequest"
+        ],
+        "summary": "Delete users from DB",
+        "responses": {
+          "400": {
+            "description": "Bad data"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/download/{item_id}": {
       "get": {
         "parameters": [
@@ -1967,6 +2061,12 @@
             "type": "string"
           },
           "description": {
+            "type": "string"
+          },
+          "document_name": {
+            "type": "string"
+          },
+          "document_data": {
             "type": "string"
           }
         }

@@ -355,3 +355,37 @@ def get_user_list():
             "users": items
         }
     ), 200
+
+
+@ADMIN_REQUEST_API.route('/user/<user_id>', methods=['DELETE'])
+@admin_access
+def delete_user(user_id):
+    """
+    Query:
+        - user_id: ID of user to delete
+    Result:
+        {"status": "ok"}
+    """
+    workspaces = dataStoreController.get_all_workspaces(1, 0, False)
+    items = [{"owner_id": workspace[1],
+              "status": workspace[2].status,
+              "id": workspace[2].get_id()
+              } for workspace in workspaces if workspace[1] == user_id and int(workspace[2].status) == WorkSpaceStatus.Active.value]
+    for workspace in items:
+        try:
+            dataStoreController.update_workspace(uuid.UUID(workspace['id']), WorkSpaceStatus.Archived.value)
+        except ItemNotFoundError:
+            return jsonify({'error': 'Incorrect workspace'}), 404
+        except SpaceNotFoundError:
+            return jsonify({'error': 'Incorrect workspace'}), 404
+        except ValueError:
+            return jsonify({'error': 'Invalid workspace ID'}), 400
+    try:
+        try:
+            user_id = uuid.UUID(user_id)
+        except Exception:
+            return jsonify({'error': 'Invalid format of user ID'}), 400
+        userController.delete_user(user_id)
+    except UserNotFoundError:
+        return jsonify({'error': 'Incorrect user ID'}), 404
+    return jsonify({"status": "ok"}), 200

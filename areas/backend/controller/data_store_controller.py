@@ -141,6 +141,9 @@ class DataStoreController:
     def get_binary_file_from_cloud_by_id(self, file_name: str):
         return self.data_store_service.get_binary_file_from_cloud_by_id(file_name)
 
+    def get_base64_file_from_cloud_by_id(self, file_name: str):
+        return self.data_store_service.get_base64_file_from_cloud_by_id(f"{file_name}")
+
     def rename_item(self, user_mail: str, item_id: UUID, new_name: str):
         return self.data_store_service.rename_item_by_id(item_id=item_id, user_mail=user_mail, new_name=new_name)
 
