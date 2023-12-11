@@ -15,7 +15,8 @@ function Search() {
     const [username, setUsername] = useState("Anonim");
     const [search, setSearch] = useState("Поиск");
     const [error, setError] = useState(null);
-    const [branch, setBranch] = useState([]);
+    const [branch, setBranch] = useState("");
+    const [spaceId, setSpaceId] = useState("");
 
     useEffect(() => {
         fetch(`${API_BASE_URL}/search?name=${name}`, {
@@ -70,6 +71,7 @@ function Search() {
                 return response.json();
             })
             .then(data => {
+                setSpaceId(space_id)
                 setBranch(data);
             })
             .catch(error => {
@@ -94,7 +96,7 @@ function Search() {
                         <span
                             onClick={() => goHome()}
                             style={{cursor: "pointer"}}
-                        >🏠</span> Просмотр ветки
+                        >🏠</span> Поиск
                 </h2>
 
                 <form onSubmit={(e) => {
@@ -161,10 +163,12 @@ function Search() {
                                     <br/>
                                 </div>
 
+                                <button className="workspace-archive" onClick={ () => {goToBranch(spaceId, branch.id)}}><p>Открыть ветку</p></button>
+
                             </div>
                         </div>
 
-                    </div>) : (<p>Нажмите на рабочее пространство для просмотра</p>)}
+                    </div>) : (<p>Нажмите на документ для просмотра</p>)}
                 </div>
             </div>
 
@@ -182,6 +186,10 @@ function goToSearch(name) {
 
 function goHome() {
     window.location.href = '/workspaces';
+}
+
+function goToBranch(spaceId, branchId) {
+    window.location.href = `/branch/${spaceId}/${branchId}`;
 }
 
 export default Search;
