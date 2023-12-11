@@ -12,11 +12,31 @@
     margin-bottom: 20px;
 }
 
-.workspace-action {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
+form {
+    display: contents;
+}
+
+.document-action-block {
+    background: white;
+    padding: 20px 20px 10px 20px;
+    border-radius: 20px;
+    margin-top: 20px;
+}
+
+p.request-content.document-name-title {
+    font-size: large;
+    margin-bottom: 10px;
+}
+
+.document-action-bottom {
+    font-size: medium;
+    margin: 0 10px 10px 0;
+    padding: 5px 5px;
+    background-color: #343434;
+}
+
+.document-action-bottom:hover {
+    background-color: #1f1f1f;
 }
 
 .page {
@@ -148,54 +168,37 @@
     cursor: pointer;
 }
 
-.workspace-archive {
+.branch-delete {
     width: 150px;
     padding: 5px;
     border-radius: 30px;
     background-color: #4f4f4f;
-    align-self: center;
+    align-self: end;
     text-align: center;
     cursor: pointer;
+    margin-top: 20px;
 }
 
-.workspace-archive:hover {
+.branch-delete:hover {
     background-color: #343434;
 }
 
-.workspace-archive p {
-    margin: 5px;
-    color: white;
-    cursor: pointer;
-}
-
-input#search {
-    padding: 5px;
-    border-radius: 10px;
-    width: 20%;
-    font-size: medium;
-}
-
-.workspace-access {
+.branch-add {
     width: 150px;
     padding: 5px;
     border-radius: 30px;
-    background-color: #4f4f4f;
-    align-self: center;
+    background-color: #a44ee0;
+    align-self: end;
     text-align: center;
     cursor: pointer;
+    margin-top: 20px;
 }
 
-.workspace-access:hover {
-    background-color: #343434;
+.branch-add:hover {
+    background-color: #9741d3;
 }
 
-.workspace-access p {
-    margin: 5px;
-    color: white;
-    cursor: pointer;
-}
-
-.workspace-archive-button {
+.branch-delete-button {
     padding: 10px 20px;
     width: 100%;
     align-self: end;
@@ -208,11 +211,11 @@ input#search {
     margin: 0 0 10px 10px;
 }
 
-.workspace-archive-button:hover {
+.branch-delete-button:hover {
     background-color: #9741d3;
 }
 
-.workspace-archive-button-close {
+.branch-delete-button-close {
     padding: 10px 20px;
     width: 100%;
     align-self: end;
@@ -225,53 +228,14 @@ input#search {
     margin: 0 0 20px 10px;
 }
 
-.access-action-user-buttons {
-    display: flex;
-    flex-direction: column;
-}
-
-.workspace-archive-button-close:hover {
+.branch-delete-button-close:hover {
     background-color: #575757;
 }
 
-.access-action-buttons {
-    display: flex;
-    flex-direction: column;
-    margin-top: 10px;
-}
-
-.access-action-button {
-    padding: 10px 20px;
-    width: 100%;
-    align-self: center;
-    border-radius: 30px;
-    border: none;
-    font-size: medium;
-    background-color: #0071ea;
+.branch-delete p {
+    margin: 5px;
     color: white;
     cursor: pointer;
-    margin: 0 10px 10px 10px;
-}
-
-.access-action-button:hover {
-    background-color: #005fc7;
-}
-
-.remove-action-button {
-    padding: 10px 20px;
-    width: 100%;
-    align-self: center;
-    border-radius: 30px;
-    border: none;
-    font-size: medium;
-    background-color: #f65858;
-    color: white;
-    cursor: pointer;
-    margin: 0 10px 10px 10px;
-}
-
-.remove-action-button:hover {
-    background-color: #e54c4c;
 }
 
 .workspace-status {
@@ -306,7 +270,6 @@ input#search {
 }
 
 .all-requests-container {
-    padding: 0;
     margin-top: 5px;
     width: max-content;
     border-radius: 10px;
@@ -363,19 +326,19 @@ input#search {
     background-color: #f6f6f6;
 }
 
-.workspace-item-title {
-    background-color: #ebe9ec;
-    padding: 15px;
-    min-width: 400px;
+.original-branch-item {
+    background-color: #ffffff;
+    padding: 15px 25px;
+    width: fit-content;
     border-radius: 10px;
     marker: none;
     display: block;
-    margin: 10px;
-    cursor: default;
+    margin-top: 10px;
+    cursor: pointer;
 }
 
-.workspace-item-title:hover {
-    background-color: #ebe9ec;
+.original-branch-item:hover {
+    background-color: #f6f6f6;
 }
 
 .branch-item {
@@ -395,7 +358,6 @@ input#search {
 
 .request-item {
     background-color: #ffffff;
-    margin-top: 10px;
     padding: 10px;
     min-width: 200px;
     border-radius: 10px;
@@ -429,9 +391,5 @@ input#search {
 
 .workspace-title {
     margin-bottom: 20px;
-}
-
-.set-up-accesses-title {
-    margin-bottom: 0;
 }
 
