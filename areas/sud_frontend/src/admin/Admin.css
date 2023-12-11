@@ -43,6 +43,11 @@ h4 {
     position: relative;
 }
 
+.all-workspaces-secondary-accent {
+    background-color: #d5d5d5;
+    position: relative;
+}
+
 .avatar p {
     margin: 0;
     font-size: x-large;
@@ -84,7 +89,7 @@ h4 {
     border-radius: 30px;
     border: none;
     font-size: medium;
-    background-color: #ff5f5f; /* Bootstrap primary color */
+    background-color: #ff5f5f;
     color: white;
     cursor: pointer;
     margin: 5px 10px 10px 10px;
@@ -106,6 +111,42 @@ h4 {
     color: white;
     cursor: pointer;
     margin: 0;
+}
+
+.admin-button-action-accent {
+    padding: 10px 20px;
+    min-width: fit-content;
+    width: fit-content;
+    align-self: end;
+    border-radius: 30px;
+    font-size: small;
+    border: none;
+    background-color: #ff5f5f;
+    color: white;
+    cursor: pointer;
+    margin: 0 0 0 10px;
+}
+
+.admin-button-action-accent:hover {
+    background-color: #f15454;
+}
+
+.admin-button-action-disabled {
+    padding: 10px 20px;
+    min-width: fit-content;
+    width: fit-content;
+    align-self: end;
+    border-radius: 30px;
+    font-size: small;
+    border: none;
+    background-color: #969696;
+    color: white;
+    cursor: default;
+    margin: 0 0 0 10px;
+}
+
+.admin-button-action-disabled:hover {
+    background-color: #969696;
 }
 
 .item-block {

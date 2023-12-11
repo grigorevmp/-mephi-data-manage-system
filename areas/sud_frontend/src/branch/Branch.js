@@ -1,10 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import './Branch.css';
 import {
-    add_request, add_branch, delete_branch, view_file, download_file, rename_file, add_workspace, upload_file
+    add_request, add_branch, delete_branch, rename_file, upload_file, copy_to_workspace
 } from "../api";
 import {useParams} from "react-router-dom";
-import {handleWorkspaceAdding} from "../workspaces/UserWorkspaces";
 
 const API_BASE_URL = 'http://localhost:5000';
 
@@ -18,6 +17,7 @@ function Branch() {
     const [result, setResult] = useState(null);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isCopyDialogOpen, setCopyDialogOpen] = useState(false);
     const [isViewDocumentOpen, setViewDocumentOpen] = useState(false);
     const [isUploadDocumentOpen, setUploadDocumentOpen] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -58,6 +58,10 @@ function Branch() {
                 setResult(value);
             })
         }
+    };
+
+    const toggleCopy = () => {
+        setCopyDialogOpen(!isCopyDialogOpen);
     };
 
     const toggleDialog = () => {
@@ -230,6 +234,38 @@ function Branch() {
             <button className="add-workspace-button-close" onClick={toggleDialog}>Закрыть</button>
         </div>)}
 
+        {/*/ КОПИРОВАНИЕ ВОРКСПЕЙСА /*/}
+
+        {isCopyDialogOpen && (<div className="dialog-container">
+            <h3>
+                Создать рабочее пространство
+            </h3>
+            <div className="form-group">
+                <label htmlFor="title">Заголовок</label>
+                <input
+                    type="text"
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="form-group">
+                <label htmlFor="description">Описание</label>
+                <input
+                    type="description"
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                />
+            </div>
+            <button className="add-workspace-button"
+                    onClick={() => handleWorkspaceAddingByCopy(space_id, branch_id, title, description)}>Сохранить
+            </button>
+            <button className="add-workspace-button-close" onClick={toggleCopy}>Закрыть</button>
+        </div>)}
+
         {/*/ ДИАЛОГ ПЕРЕИМЕНОВАНИЯ ДОКУМЕНТА /*/}
 
         {isRenameDocumentOpen && (<div className="dialog-container">
@@ -375,6 +411,9 @@ function Branch() {
 
                                 <p className="request-content"><b>Привязанная задача:</b> {branch.task_id}</p>
 
+                                <button className="workspace-archive" onClick={toggleCopy}><p>Копировать ветку в
+                                    новое рабочее пространство</p></button>
+
                                 <div className="document-action-block">
                                     <p className="request-content document-name-title"><b>Имя:</b> {branch.document}</p>
                                     <p className="request-content"><b>Идентификатор:</b> {branch.document_id}</p>
@@ -384,10 +423,13 @@ function Branch() {
                                         onClick={() => downloadFileById(branch.document, branch.document_id)}>Скачать
                                     </button>
                                     <button
-                                        className="document-action-bottom" onClick={toggleUploadDocumentOpen}>Загрузить</button>
+                                        className="document-action-bottom" onClick={toggleUploadDocumentOpen}>Загрузить
+                                    </button>
                                     <br/>
                                     <button
-                                        className="document-action-bottom" onClick={() => viewFileById(branch.document_id)}>Просмотр</button>
+                                        className="document-action-bottom"
+                                        onClick={() => viewFileById(branch.document_id)}>Просмотр
+                                    </button>
                                     <button
                                         className="document-action-bottom" onClick={() => {
                                         setName(branch.document)
@@ -502,6 +544,23 @@ export async function handleBranchDeletion(space_id, branch_id, branch_parent) {
             localStorage.setItem('authToken', response.token);
 
             goToBranch(space_id, branch_parent);
+            console.error('Registration was successful, token provided in the response.');
+        } else {
+            console.error('Registration was unsuccessful, no token provided in the response.');
+        }
+    } catch (error) {
+        console.error('An error occurred during login:', error);
+    }
+}
+
+export async function handleWorkspaceAddingByCopy(space_id, branch_id, title, description) {
+    try {
+        const response = await copy_to_workspace(space_id, branch_id, {title, description});
+
+        if (response === 200) {
+            localStorage.setItem('authToken', response.token);
+
+            window.location.href = '/workspaces';
             console.error('Registration was successful, token provided in the response.');
         } else {
             console.error('Registration was unsuccessful, no token provided in the response.');

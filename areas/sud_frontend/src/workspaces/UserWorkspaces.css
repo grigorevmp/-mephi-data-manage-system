@@ -150,7 +150,8 @@
 
 .workspace-archive {
     width: 150px;
-    padding: 5px;
+    min-width: fit-content;
+    padding: 5px 15px;
     border-radius: 30px;
     background-color: #4f4f4f;
     align-self: center;

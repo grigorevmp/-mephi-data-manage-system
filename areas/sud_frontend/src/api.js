@@ -45,6 +45,21 @@ export async function add_workspace(content) {
     return response.status;
 }
 
+export async function copy_to_workspace(space_id, branch_id, content) {
+    const response = await fetch(`${API_BASE_URL}/workspace/${space_id}/copy/${branch_id}`, {
+        method: 'POST', headers: {
+            'Content-Type': 'application/json',
+        }, body: JSON.stringify(content), credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Adding failed');
+    }
+
+
+    return response.status;
+}
+
 export async function add_department(content) {
     const response = await fetch(`${API_BASE_URL}/department`, {
         method: 'POST', headers: {
@@ -93,6 +108,21 @@ export async function delete_user_from_department(name, users) {
         method: 'DELETE', headers: {
             'Content-Type': 'application/json',
         }, body: JSON.stringify({users}), credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Deletion failed');
+    }
+
+    return response.status;
+}
+
+
+export async function delete_user(user_id) {
+    const response = await fetch(`${API_BASE_URL}/user/${user_id}`, {
+        method: 'DELETE', headers: {
+            'Content-Type': 'application/json',
+        }, credentials: 'include',
     });
 
     if (!response.ok) {

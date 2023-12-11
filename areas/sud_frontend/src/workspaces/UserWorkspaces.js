@@ -24,7 +24,7 @@ function UserWorkspaces() {
     const [result, setResult] = useState(null);
     const [username, setUsername] = useState("Anonim");
     const [error, setError] = useState(null);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDialogOpen, setDialogOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [isAccessOpen, setIsAccessOpen] = useState(false);
     const [accesses, setAccesses] = useState([]);
@@ -46,7 +46,7 @@ function UserWorkspaces() {
     };
 
     const toggleDialog = () => {
-        setIsDialogOpen(!isDialogOpen);
+        setDialogOpen(!isDialogOpen);
     };
 
     const toggleAddDepartmentAccessDialog = () => {
@@ -225,7 +225,7 @@ function UserWorkspaces() {
 
     return (<div className="page">
 
-        {/*/ ДИАЛОГ СОЗДАНИЯ  ВОРКСПЕЙСА /*/}
+        {/*/ ДИАЛОГ СОЗДАНИЯ ВОРКСПЕЙСА /*/}
 
         {isDialogOpen && (<div className="dialog-container">
             <h3>
@@ -379,6 +379,7 @@ function UserWorkspaces() {
                 <input
                     type="text"
                     id="search"
+                    enterKeyHint={"search"}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onKeyDown={(event) => {

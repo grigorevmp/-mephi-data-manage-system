@@ -250,7 +250,6 @@ def get_department_with_users():
         }
     """
     name = request.args.get('name', default=None, type=str)
-    print(name)
     try:
         department = userController.get_department_by_name(name)
     except DepartmentNotFoundError:

@@ -77,7 +77,6 @@ def logout():
 """
 
 
-# TODO REFACTOR OLD
 @USER_REQUEST_API.route('/search', methods=['GET'])
 @token_required
 def search_for():
@@ -504,6 +503,7 @@ def copy_document(space_id, branch_id):
         doc_id = str(item.document.get_id())
         doc_name = item.document.name
         doc_full_name = doc_id + '_' + doc_name
+        print(doc_full_name)
         try:
             file: Optional[Document] = dataStoreController.get_base64_file_from_cloud_by_id(doc_full_name)
         except FileNotFoundError:
@@ -698,7 +698,6 @@ def view_file_by_id(file_id):
         return jsonify({'error': 'Cannot view such type of file'}), 403
 
     try:
-        print(file_id + "_" + file.get_name())
         binary_file = dataStoreController.get_binary_file_from_cloud_by_id(file_id + "_" + file.get_name())
         return send_file(binary_file, mimetype_dict[file_type])
     except FileNotFoundError:
