@@ -280,7 +280,6 @@ def get_workspace_content(space_id):
 
         branches = []
         for branch in item.branches:
-            print(branch.status)
             branches.append(
                 {
                     "name": branch.name,
