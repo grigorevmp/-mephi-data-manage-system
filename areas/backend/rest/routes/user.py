@@ -4,19 +4,19 @@ from typing import Optional
 
 from flask import jsonify, Blueprint, make_response, request, send_file
 
-from areas.backend.controller.data_store_controller import DataStoreController, AccessEditTypeEnum, AccessClassEnum
-from areas.backend.controller.user_controller import UserController
-from areas.backend.core.accesses import BaseAccess, UrlAccess, UserAccess, DepartmentAccess, AccessType
-from areas.backend.core.branch import Branch
-from areas.backend.core.branch_status import BranchStatus
-from areas.backend.core.document import Document
-from areas.backend.core.request import Request
-from areas.backend.core.request_status import RequestStatus
-from areas.backend.core.role import Role
-from areas.backend.core.workspace import WorkSpace
-from areas.backend.core.workspace_status import WorkSpaceStatus
-from areas.backend.decorators.token_required import token_required, get_user_by_token
-from areas.backend.exceptions.exceptions import AlreadyExistsError, InvalidCredentialsError, ItemNotFoundError, \
+from controller.data_store_controller import DataStoreController, AccessEditTypeEnum, AccessClassEnum
+from controller.user_controller import UserController
+from core.accesses import BaseAccess, UrlAccess, UserAccess, DepartmentAccess, AccessType
+from core.branch import Branch
+from core.branch_status import BranchStatus
+from core.document import Document
+from core.request import Request
+from core.request_status import RequestStatus
+from core.role import Role
+from core.workspace import WorkSpace
+from core.workspace_status import WorkSpaceStatus
+from decorators.token_required import token_required, get_user_by_token
+from exceptions.exceptions import AlreadyExistsError, InvalidCredentialsError, ItemNotFoundError, \
     NotAllowedError, UserNotFoundError, DepartmentNotFoundError, AccessError, SpaceNotFoundError
 
 USER_REQUEST_API = Blueprint('request_user_api', __name__)

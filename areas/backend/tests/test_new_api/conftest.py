@@ -5,7 +5,7 @@ from bcrypt import hashpw, gensalt
 
 from tests.test_new_api.conftest_constants import *
 from core.workspace_status import WorkSpaceStatus
-from areas.backend.web_server import create_app
+from web_server import create_app
 
 
 app_testing = create_app(True, db_uri=f'sqlite:///:memory:')
@@ -13,10 +13,10 @@ app_testing = create_app(True, db_uri=f'sqlite:///:memory:')
 
 @pytest.fixture(scope='function', autouse=True)
 def user1_workspaces():
-    from areas.backend.app_db import get_current_db
+    from app_db import get_current_db
     with app_testing.app_context():
         db_ = get_current_db(app_testing)
-        from areas.backend.database.database import WorkspaceModel
+        from database.database import WorkspaceModel
         for workspace in [
             {'id': user1_workspace1_id, 'status': WorkSpaceStatus.Active.value, 'main_branch': user1_workspace1_master_id},
             {'id': user1_workspace2_id, 'status': WorkSpaceStatus.Archived.value, 'main_branch': user1_workspace2_master_id},
@@ -37,10 +37,10 @@ def user1_workspaces():
 
 @pytest.fixture(scope='function', autouse=True)
 def department():
-    from areas.backend.app_db import get_current_db
+    from app_db import get_current_db
     with app_testing.app_context():
         db_ = get_current_db(app_testing)
-        from areas.backend.database.database import DepartmentModel
+        from database.database import DepartmentModel
         test_department = DepartmentModel(
             name='Test Department',
         )
@@ -51,11 +51,11 @@ def department():
 
 @pytest.fixture(scope='function', autouse=True)
 def admin_user():
-    from areas.backend.app_db import get_current_db
+    from app_db import get_current_db
     with app_testing.app_context():
         db_ = get_current_db(app_testing)
-        from areas.backend.database.database import UserModel
-        from areas.backend.core.role import Role
+        from database.database import UserModel
+        from core.role import Role
         test_user = UserModel(
             id=admin_id,
             email='admin@mail.com',
@@ -70,11 +70,11 @@ def admin_user():
 
 @pytest.fixture(scope='function', autouse=True)
 def casual_user():
-    from areas.backend.app_db import get_current_db
+    from app_db import get_current_db
     with app_testing.app_context():
         db_ = get_current_db(app_testing)
-        from areas.backend.database.database import UserModel
-        from areas.backend.core.role import Role
+        from database.database import UserModel
+        from core.role import Role
         test_user = UserModel(
             email='user@mail.com',
             id=casual_user_id,

@@ -3,15 +3,15 @@ from typing import Optional, BinaryIO
 import uuid
 from uuid import UUID
 
-from areas.backend.core.accesses import BaseAccess, DepartmentAccess, UserAccess, UrlAccess, AccessType
-from areas.backend.core.branch import Branch
-from areas.backend.core.document import Document
-from areas.backend.core.request import Request
-from areas.backend.core.workspace import WorkSpace
-from areas.backend.exceptions.exceptions import ItemNotFoundError, AlreadyExistsError, SpaceNotFoundError
-from areas.backend.repository.data_store_storage_repository import DataStoreStorageRepository
+from core.accesses import BaseAccess, DepartmentAccess, UserAccess, UrlAccess, AccessType
+from core.branch import Branch
+from core.document import Document
+from core.request import Request
+from core.workspace import WorkSpace
+from exceptions.exceptions import ItemNotFoundError, AlreadyExistsError, SpaceNotFoundError
+from repository.data_store_storage_repository import DataStoreStorageRepository
 
-from areas.backend.core.workspace_status import WorkSpaceStatus
+from core.workspace_status import WorkSpaceStatus
 
 
 class DataStoreService:

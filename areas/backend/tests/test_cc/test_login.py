@@ -60,14 +60,14 @@ class TestLogin:
         assert resp['error'] == "Unauthorised"
 
     def test_invalid_token(self, app_client_user, fill_db):
-        app_client_user.set_cookie(server_name='localhost', key='token', value=invalid_token)
+        app_client_user.set_cookie(server_name='ui', key='token', value=invalid_token)
         response = app_client_user.get(f'/get_spaces')
         assert response.status_code == 403
         resp = response.json
         assert resp['error'] == "Invalid token"
 
     def test_invalid_token_admin(self, app_client_admin, fill_db):
-        app_client_admin.set_cookie(server_name='localhost', key='token', value=invalid_token)
+        app_client_admin.set_cookie(server_name='ui', key='token', value=invalid_token)
         response = app_client_admin.get(f'/user')
         assert response.status_code == 403
         resp = response.json

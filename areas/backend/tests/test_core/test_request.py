@@ -2,8 +2,8 @@ import uuid
 
 import pytest
 
-from areas.backend.core.request import Request
-from areas.backend.core.request_status import RequestStatus
+from core.request import Request
+from core.request_status import RequestStatus
 
 
 @pytest.fixture()

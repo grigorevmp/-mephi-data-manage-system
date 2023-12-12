@@ -1,10 +1,10 @@
 import uuid
 from uuid import UUID
 
-from areas.backend.core.accesses import UrlAccess, Access, UserAccess, DepartmentAccess, BaseAccess
-from areas.backend.decorators.token_required import get_user_by_token
-from areas.backend.exceptions.exceptions import NotAllowedError, SpaceNotFoundError
-from areas.backend.service.data_store_service import DataStoreService
+from core.accesses import UrlAccess, Access, UserAccess, DepartmentAccess, BaseAccess
+from decorators.token_required import get_user_by_token
+from exceptions.exceptions import NotAllowedError, SpaceNotFoundError
+from service.data_store_service import DataStoreService
 
 
 class AccessService:

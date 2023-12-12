@@ -1,9 +1,8 @@
 from typing import Optional
 from uuid import UUID, uuid4
 
-import areas
-from areas.backend.core.document import Document
-from areas.backend.core.branch_status import BranchStatus
+from core.document import Document
+from core.branch_status import BranchStatus
 
 
 class Branch:

@@ -1,8 +1,8 @@
 import pytest
 
-from areas.backend.core.department import Department
-from areas.backend.core.user import User
-from areas.backend.core.user_manager import UserNotFoundError
+from core.department import Department
+from core.user import User
+from core.user_manager import UserNotFoundError
 
 
 @pytest.fixture()

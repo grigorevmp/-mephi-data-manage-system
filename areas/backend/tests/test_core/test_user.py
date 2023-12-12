@@ -4,14 +4,14 @@ from uuid import uuid4
 
 import pytest
 
-from areas.backend.core.branch import Branch
-from areas.backend.core.branch_status import BranchStatus
-from areas.backend.core.department_manager import DepartmentManager
-from areas.backend.core.document import Document
-from areas.backend.core.role import Role
-from areas.backend.core.user import User
-from areas.backend.core.workspace import WorkSpace
-from areas.backend.core.workspace_status import WorkSpaceStatus
+from core.branch import Branch
+from core.branch_status import BranchStatus
+from core.department_manager import DepartmentManager
+from core.document import Document
+from core.role import Role
+from core.user import User
+from core.workspace import WorkSpace
+from core.workspace_status import WorkSpaceStatus
 
 
 @pytest.fixture()

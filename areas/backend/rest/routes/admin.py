@@ -3,13 +3,13 @@ import uuid
 
 from flask import jsonify, Blueprint, request
 
-from areas.backend.controller.data_store_controller import *
-from areas.backend.controller.user_controller import UserController
-from areas.backend.core.department import Department
-from areas.backend.decorators.token_required import admin_access
-from areas.backend.exceptions.exceptions import AlreadyExistsError, ItemNotFoundError, UserNotFoundError, \
+from controller.data_store_controller import *
+from controller.user_controller import UserController
+from core.department import Department
+from decorators.token_required import admin_access
+from exceptions.exceptions import AlreadyExistsError, ItemNotFoundError, UserNotFoundError, \
     SpaceNotFoundError
-from areas.backend.core.department_manager import DepartmentNotFoundError
+from core.department_manager import DepartmentNotFoundError
 
 ADMIN_REQUEST_API = Blueprint('request_admin_api', __name__)
 

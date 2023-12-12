@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import UUID, uuid4
 
-from areas.backend.core.request_status import RequestStatus
+from core.request_status import RequestStatus
 
 
 class Request:

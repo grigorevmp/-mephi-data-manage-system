@@ -4,13 +4,13 @@ from uuid import UUID
 from bcrypt import checkpw, gensalt, hashpw
 from jwt import InvalidTokenError, decode, encode
 
-from areas.backend.core.department import Department
-from areas.backend.core.department_manager import DepartmentNotFoundError
-from areas.backend.core.role import Role
-from areas.backend.core.user import User
-from areas.backend.core.user_manager import UserNotFoundError
-from areas.backend.exceptions.exceptions import AlreadyExistsError, InvalidCredentialsError
-from areas.backend.repository.user_storage_repository import UserRepository
+from core.department import Department
+from core.department_manager import DepartmentNotFoundError
+from core.role import Role
+from core.user import User
+from core.user_manager import UserNotFoundError
+from exceptions.exceptions import AlreadyExistsError, InvalidCredentialsError
+from repository.user_storage_repository import UserRepository
 
 
 class UserService:
