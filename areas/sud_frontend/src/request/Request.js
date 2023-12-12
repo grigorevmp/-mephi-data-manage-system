@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import './Request.css';
-import {add_request, add_branch, close_request} from "../api";
+import {merge_request, close_request} from "../api";
 import {useParams} from "react-router-dom";
 
 const API_BASE_URL = 'http://localhost:5000';
 
 function Request() {
-    const {space_id, branch_id, request_id} = useParams();
+    const {space_id, request_id} = useParams();
 
     const [branch, setBranch] = useState([]);
     const [request, setRequest] = useState([]);
@@ -14,7 +14,6 @@ function Request() {
     const [user, setUser] = useState("Anonim");
     const [error, setError] = useState(null);
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
@@ -23,10 +22,6 @@ function Request() {
 
     const R_STATUS_MAP = {
         1: 'Открыт', 2: 'В ревью', 3: 'Принят', 4: 'Отклонён', 5: 'Закрыт',
-    };
-
-    const toggleDialog = () => {
-        setIsDialogOpen(!isDialogOpen);
     };
 
     const toggleCreate = () => {
@@ -51,18 +46,12 @@ function Request() {
             })
             .then(data => {
                 setRequest(data);
+                return fetch(`${API_BASE_URL}/workspace/${space_id}/view/${data.source_branch_id}`, {
+                    method: 'GET', headers: {
+                        'Content-Type': 'application/json',
+                    }, credentials: 'include',
+                })
             })
-            .catch(error => {
-                setError(error.message);
-            });
-    }, []);
-
-    useEffect(() => {
-        fetch(`${API_BASE_URL}/workspace/${space_id}/view/${branch_id}`, {
-            method: 'GET', headers: {
-                'Content-Type': 'application/json',
-            }, credentials: 'include',
-        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -76,6 +65,26 @@ function Request() {
                 setError(error.message);
             });
     }, []);
+
+    // useEffect(() => {
+    //     fetch(`${API_BASE_URL}/workspace/${space_id}/view/${branch_id}`, {
+    //         method: 'GET', headers: {
+    //             'Content-Type': 'application/json',
+    //         }, credentials: 'include',
+    //     })
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 throw new Error(`HTTP error! status: ${response.status}`);
+    //             }
+    //             return response.json();
+    //         })
+    //         .then(data => {
+    //             setBranch(data);
+    //         })
+    //         .catch(error => {
+    //             setError(error.message);
+    //         });
+    // }, []);
 
     useEffect(() => {
         fetch(`${API_BASE_URL}/whoiam`, {
@@ -123,6 +132,19 @@ function Request() {
 
     return (
         <div className="page">
+            {/*/ ДИАЛОГ ПОДТВЕРЖЕНИЯ  СОГЛАСОВАНИЯ /*/}
+
+            {isCreateOpen && (
+                <div className="dialog-container">
+                    <h3>
+                        Согласовать изменения?
+                    </h3>
+                    <button className="branch-delete-button"
+                            onClick={() => handleRequestConfirm(space_id, request_id)}>Да
+                    </button>
+                    <button className="branch-delete-button-close" onClick={toggleCreate}>Нет</button>
+                </div>
+            )}
 
             {/*/ ДИАЛОГ ПОДТВЕРЖЕНИЯ  УДАЛЕНИЯ /*/}
 
@@ -197,7 +219,7 @@ function Request() {
                                 </p>
                             </div>
                             
-                            {(workspace.user_id === user.id && request.status < 3) && <button className="branch-add" onClick={toggleCreate}>Согласовать (TODO)</button>}
+                            {(workspace.user_id === user.id && request.status < 3) && <button className="branch-add" onClick={toggleCreate}>Согласовать</button>}
                             {((branch.author === user.id || workspace.user_id === user.id) && request.status < 3) && <button className="branch-delete" onClick={toggleConfirm}>Удалить</button>}
 
                         </div>) : (<p>Нажмите на рабочее пространство для просмотра</p>)}
@@ -206,6 +228,23 @@ function Request() {
 
             </div>
         </div>);
+}
+
+export async function handleRequestConfirm(space_id, request_id) {
+    try {
+        const response = await merge_request(space_id, request_id);
+
+        if (response === 200) {
+            localStorage.setItem('authToken', response.token);
+
+            goHome();
+            console.error('Registration was successful, token provided in the response.');
+        } else {
+            console.error('Registration was unsuccessful, no token provided in the response.');
+        }
+    } catch (error) {
+        console.error('An error occurred during login:', error);
+    }
 }
 
 export async function handleRequestDeletion(space_id, request_id) {

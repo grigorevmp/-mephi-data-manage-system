@@ -380,7 +380,7 @@ function Branch() {
                         {branch.requests != null && branch.requests.length > 0 ? (
                             <ul className="all-workspaces-container">
                                 {branch.requests.map(current_branch => (
-                                    <li onClick={() => goToRequest(space_id, branch_id, current_branch.id)}
+                                    <li onClick={() => goToRequest(space_id, current_branch.id)}
                                         className="workspace-item"
                                         key={current_branch.id}> {current_branch.title}</li>))}
                             </ul>) : (<p className="workspace-item-p">Не найдено реквестов</p>)}
@@ -582,8 +582,8 @@ function goToBranch(space_id, branch_id) {
     window.location.href = `/branch/${space_id}/${branch_id}`;
 }
 
-function goToRequest(space_id, branch_id, request_id) {
-    window.location.href = `/request/${space_id}/${branch_id}/${request_id}`;
+function goToRequest(space_id, request_id) {
+    window.location.href = `/request/${space_id}/${request_id}`;
 }
 
 export default Branch;

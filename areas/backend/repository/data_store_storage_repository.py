@@ -14,6 +14,7 @@ from app_db import get_current_db
 from config import endpoint, secret_key, access_key
 from core.accesses import UrlAccess, AccessType, DepartmentAccess, UserAccess
 from core.branch import Branch
+from core.branch_status import BranchStatus
 from core.document import Document
 from core.request import Request
 from core.request_status import RequestStatus
@@ -179,6 +180,7 @@ class DataStoreStorageRepository:
                         name=br.name,
                         author=br.author,
                         parent=br.parent_branch_id,
+                        status=br.status,
                         document=document,
                         _id=br.id,
                     )
@@ -282,6 +284,7 @@ class DataStoreStorageRepository:
                         name=br.name,
                         author=br.author,
                         parent=br.parent_branch_id,
+                        status=br.status,
                         document=document,
                         _id=br.id,
                     )
@@ -369,6 +372,7 @@ class DataStoreStorageRepository:
                         name=br.name,
                         author=br.author,
                         parent=br.parent_branch_id,
+                        status=br.status,
                         document=document,
                         _id=br.id,
                     )
@@ -467,6 +471,7 @@ class DataStoreStorageRepository:
             author=user.id,
             document_id=str(file_id),
             parent_branch_id=-1,
+            status=BranchStatus.Active.value,
             workspace_id=workspace_id
         )
 
@@ -555,6 +560,7 @@ class DataStoreStorageRepository:
                         name=br.name,
                         author=br.author,
                         parent=br.parent_branch_id,
+                        status=br.status,
                         document=document,
                         _id=br.id,
                     )
@@ -714,6 +720,7 @@ class DataStoreStorageRepository:
                 author=str(branch.author),
                 workspace_id=str(workspace_id),
                 document_id=str(document_id),
+                status=BranchStatus.Active.value,
                 parent_branch_id=str(branch.get_parent_id()),
             )
 
@@ -807,14 +814,18 @@ class DataStoreStorageRepository:
             if current_request is None:
                 raise FileNotFoundError
 
-            branch = self.get_branch_in_workspace_by_id(user_mail, workspace_id, current_request.get_source_branch_id())
+            branch = self.get_branch_in_workspace_by_id(user_mail, workspace_id, current_request.get_source_branch_id())[0]
 
             self.db.session.execute(
                 update(BranchModel).where(BranchModel.id == str(current_request.get_target_branch_id())).values(
                     document_id=branch.document.get_id()
                 ))
 
-            self.delete_branch_from_workspace_by_id(user_mail, workspace_id, branch.get_id())
+            self.db.session.execute(
+                update(BranchModel).where(BranchModel.id == str(current_request.get_source_branch_id())).values(
+                    status=BranchStatus.Merged.value
+                ))
+            #self.delete_branch_from_workspace_by_id(user_mail, workspace_id, branch.get_id())
             self.change_request_status(user_mail, workspace_id, request_id, RequestStatus.Merged.value)
         else:
             raise NotAllowedError()

@@ -1,7 +1,9 @@
 from typing import Optional
 from uuid import UUID, uuid4
 
+import areas
 from core.document import Document
+from core.branch_status import BranchStatus
 
 
 class Branch:
@@ -10,6 +12,7 @@ class Branch:
             name: Optional[str],
             author: UUID,
             parent: UUID,
+            status: BranchStatus,
             document: Document,
             _id: Optional[UUID] = None,
     ):
@@ -17,12 +20,24 @@ class Branch:
         self.__name: str = name
         self.__author: UUID = author
         self.__parent: UUID = parent
+        self.__status: BranchStatus = status
         self.__document: Document = document
     def get_id(self) -> UUID:
         return self.__id
 
     def get_parent_id(self) -> UUID:
         return self.__parent
+
+    def get_status(self) -> BranchStatus:
+        return self.__status
+
+    def set_status(self, new_status: BranchStatus):
+        if isinstance(new_status, BranchStatus):
+            self.__status = new_status
+        else:
+            raise TypeError
+
+    status = property(get_status, set_status)
 
     def get_document(self) -> Document:
         return self.__document

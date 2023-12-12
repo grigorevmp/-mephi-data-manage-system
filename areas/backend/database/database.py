@@ -67,6 +67,7 @@ class BranchModel(db.Model):
     name = db.Column('branch_name', db.String)
     parent_branch_id = db.Column(db.String)
     author = db.Column(db.String)
+    status = db.Column(db.String)
 
     document_id = db.Column(db.String, db.ForeignKey("document.document_id"))
     workspace_id = db.Column(db.String, db.ForeignKey("workspace.workspace_id"))
