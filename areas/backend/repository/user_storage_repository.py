@@ -157,6 +157,15 @@ class UserRepository:
         department: DepartmentModel = DepartmentModel.query.filter_by(name=department_name).first()
         if department is None:
             raise DepartmentNotFoundError
+
+        # Clear department from users
+        users: List[UserModel] = UserModel.query.filter_by(department_id=department.id).all()
+
+        for user in users:
+            db.session.execute(update(UserModel).where(UserModel.id == str(user.id)).values(
+                department_id=None
+            ))
+
         db.session.delete(department)
         db.session.commit()
 
