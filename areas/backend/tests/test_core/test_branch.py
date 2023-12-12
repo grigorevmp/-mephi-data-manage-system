@@ -29,7 +29,7 @@ def branch(file):
         _id=test_id,
         name="test_space",
         author=author_id,
-        status=BranchStatus.Active.value
+        status=BranchStatus.Active.value,
         parent=parent_id,
         document=file,
     )
