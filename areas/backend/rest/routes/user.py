@@ -8,6 +8,7 @@ from areas.backend.controller.data_store_controller import DataStoreController, 
 from areas.backend.controller.user_controller import UserController
 from areas.backend.core.accesses import BaseAccess, UrlAccess, UserAccess, DepartmentAccess, AccessType
 from areas.backend.core.branch import Branch
+from areas.backend.core.branch_status import BranchStatus
 from areas.backend.core.document import Document
 from areas.backend.core.request import Request
 from areas.backend.core.request_status import RequestStatus
@@ -282,6 +283,7 @@ def get_workspace_content(space_id):
             branches.append(
                 {
                     "name": branch.name,
+                    "status": branch.status,
                     "id": branch.get_id(),
                 }
             )
@@ -430,6 +432,7 @@ def add_branch(space_id):
             name=name,
             author=user.get_id(),
             document=document_id,
+            status=BranchStatus.Active.value,
             parent=parent_branch_id,
         )
 
@@ -621,8 +624,9 @@ def close_request(space_id, request_id):
 
 @USER_REQUEST_API.route('/workspace/<space_id>/request/<request_id>/force_merge', methods=['POST'])
 def force_merge(space_id, request_id):
+    user = get_user_by_token()
     try:
-        new_file_id = dataStoreController.force_merge(request_id, space_id, request_id)
+        new_file_id = dataStoreController.force_merge(user.email, space_id, request_id)
     except ItemNotFoundError:
         return jsonify({'error': 'Incorrect directory'}), 404
     except NotAllowedError:

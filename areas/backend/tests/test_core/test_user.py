@@ -5,6 +5,7 @@ from uuid import uuid4
 import pytest
 
 from areas.backend.core.branch import Branch
+from areas.backend.core.branch_status import BranchStatus
 from areas.backend.core.department_manager import DepartmentManager
 from areas.backend.core.document import Document
 from areas.backend.core.role import Role
@@ -46,6 +47,7 @@ def branch(file):
         name="test_space",
         author=uuid4(),
         parent=uuid4(),
+        status=BranchStatus.Active.value,
         document=file,
     )
 

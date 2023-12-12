@@ -24,7 +24,7 @@ function App() {
                         <Route exact path="/admin" element={<Admin/>}/>
                         <Route exact path="/branch/:space_id/:branch_id" element={<Branch/>}/>
                         <Route exact path="/search/:name" element={<Search/>}/>
-                        <Route exact path="/request/:space_id/:branch_id/:request_id" element={<Request/>}/>
+                        <Route exact path="/request/:space_id/:request_id" element={<Request/>}/>
                         <Route exact path="/registration"
                                element={<RegistrationForm onRegistration={handleRegistration}/>}
                         />
