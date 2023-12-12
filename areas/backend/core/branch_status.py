@@ -8,7 +8,7 @@ class BranchStatus(Enum):
     @staticmethod
     def get_enum_from_value(value):
         if str(value) == "1":
-            return BranchStatus.Open
+            return BranchStatus.Active
         elif str(value) == "2":
             return BranchStatus.Merged
         else:
