@@ -1,11 +1,11 @@
 from typing import Optional
 from uuid import UUID, uuid4
 
-from areas.backend.core.accesses import BaseAccess
-from areas.backend.core.branch import Branch
-from areas.backend.core.request import Request
-from areas.backend.core.request_status import RequestStatus
-from areas.backend.core.workspace_status import WorkSpaceStatus
+from core.accesses import BaseAccess
+from core.branch import Branch
+from core.request import Request
+from core.request_status import RequestStatus
+from core.workspace_status import WorkSpaceStatus
 
 
 class WorkSpace:

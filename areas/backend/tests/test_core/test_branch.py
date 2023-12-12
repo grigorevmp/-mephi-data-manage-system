@@ -3,8 +3,8 @@ import uuid
 
 import pytest
 
-from areas.backend.core.branch import Branch
-from areas.backend.core.document import Document
+from core.branch import Branch
+from core.document import Document
 
 
 @pytest.fixture()

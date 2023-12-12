@@ -3,15 +3,15 @@ from uuid import UUID
 
 from sqlalchemy import update
 
-from areas.backend.core.accesses import AccessType
-from areas.backend.core.department_manager import DepartmentManager
-from areas.backend.core.user import User
-from areas.backend.core.department import Department
+from core.accesses import AccessType
+from core.department_manager import DepartmentManager
+from core.user import User
+from core.department import Department
 from flask import current_app
-from areas.backend.core.user_manager import UserNotFoundError
-from areas.backend.app_db import get_current_db
-from areas.backend.database.database import UserModel, DepartmentModel
-from areas.backend.repository.data_store_storage_repository import DataStoreStorageRepository
+from core.user_manager import UserNotFoundError
+from app_db import get_current_db
+from database.database import UserModel, DepartmentModel
+from repository.data_store_storage_repository import DataStoreStorageRepository
 
 db = get_current_db(current_app)
 
@@ -25,7 +25,7 @@ class UserRepository:
         self.data_storage_repo = DataStoreStorageRepository()
 
     def get_user_from_db_by_id(self, _id: UUID):
-        from areas.backend.database.database import UserModel
+        from database.database import UserModel
         user: UserModel = UserModel.query.filter_by(id=str(_id)).first()
         if user is None:
             raise UserNotFoundError
@@ -38,7 +38,7 @@ class UserRepository:
         )
 
     def get_user_from_db_by_id(self, _id: UUID):
-        from areas.backend.database.database import UserModel, DepartmentModel
+        from database.database import UserModel, DepartmentModel
         user: UserModel = UserModel.query.filter_by(id=str(_id)).first()
         if user is None:
             raise UserNotFoundError
@@ -63,7 +63,7 @@ class UserRepository:
         return current_user
 
     def get_user_departments_by_id(self, _id: UUID) -> list[str]:
-        from areas.backend.database.database import UserModel
+        from database.database import UserModel
         user: UserModel = UserModel.query.filter_by(id=str(_id)).first()
         department: DepartmentModel = DepartmentModel.query.filter_by(id=user.department_id).first()
         if department is not None:
@@ -72,7 +72,7 @@ class UserRepository:
             return []
 
     def get_user_from_db_by_email(self, email: str) -> User:
-        from areas.backend.database.database import UserModel
+        from database.database import UserModel
         user: UserModel = UserModel.query.filter_by(email=email).first()
         if user is None:
             raise UserNotFoundError
@@ -86,7 +86,7 @@ class UserRepository:
 
     @staticmethod
     def add_new_user_to_db(new_user: User) -> None:
-        from areas.backend.database.database import UserModel
+        from database.database import UserModel
 
         user: UserModel = UserModel(
             id=str(new_user.get_id()),
@@ -104,13 +104,13 @@ class UserRepository:
     """
 
     def get_departments(self) -> List[Department]:
-        from areas.backend.database.database import DepartmentModel
+        from database.database import DepartmentModel
         departments: List[DepartmentModel] = DepartmentModel.query.all()
         departments_list = [Department(i.name, []) for i in departments]
         return departments_list
 
     def get_users(self) -> List[User]:
-        from areas.backend.database.database import UserModel
+        from database.database import UserModel
         users: List[UserModel] = UserModel.query.all()
         all_users = [
             User(
@@ -125,8 +125,8 @@ class UserRepository:
         return all_users
 
     def get_department_by_name(self, department_name) -> Department:
-        from areas.backend.database.database import DepartmentModel
-        from areas.backend.core.department_manager import DepartmentNotFoundError
+        from database.database import DepartmentModel
+        from core.department_manager import DepartmentNotFoundError
         department: DepartmentModel = DepartmentModel.query.filter_by(name=department_name).first()
         if department is None:
             raise DepartmentNotFoundError
@@ -146,14 +146,14 @@ class UserRepository:
         )
 
     def add_new_department(self, new_department: Department) -> None:
-        from areas.backend.database.database import DepartmentModel
+        from database.database import DepartmentModel
         department: DepartmentModel = DepartmentModel(name=new_department.department_name)
         db.session.add(department)
         db.session.commit()
 
     def delete_department_by_name(self, department_name: str) -> None:
-        from areas.backend.database.database import DepartmentModel
-        from areas.backend.core.department_manager import DepartmentNotFoundError
+        from database.database import DepartmentModel
+        from core.department_manager import DepartmentNotFoundError
         department: DepartmentModel = DepartmentModel.query.filter_by(name=department_name).first()
         if department is None:
             raise DepartmentNotFoundError
@@ -161,7 +161,7 @@ class UserRepository:
         db.session.commit()
 
     def add_users_to_department(self, department_name: str, users: List[str]) -> Department:
-        from areas.backend.database.database import DepartmentModel, UserModel
+        from database.database import DepartmentModel, UserModel
         department_model: DepartmentModel = DepartmentModel.query.filter_by(name=department_name).first()
 
         for user in users:
@@ -174,7 +174,7 @@ class UserRepository:
             db.session.commit()
 
     def delete_users_from_department(self, department_name: str, users: List[str]) -> Department:
-        from areas.backend.database.database import DepartmentModel, UserModel
+        from database.database import DepartmentModel, UserModel
         department_model: DepartmentModel = DepartmentModel.query.filter_by(name=department_name).first()
 
         for user in users:
@@ -187,7 +187,7 @@ class UserRepository:
             db.session.commit()
 
     def update_department_users(self, department: Department) -> Department:
-        from areas.backend.database.database import DepartmentModel, UserModel
+        from database.database import DepartmentModel, UserModel
         department_model: DepartmentModel = DepartmentModel.query.filter_by(name=department.department_name).first()
         users = []
         for user in department.users:
@@ -202,8 +202,8 @@ class UserRepository:
 
     @staticmethod
     def delete_user(user_id: UUID):
-        from areas.backend.exceptions.exceptions import UserNotFoundError
-        from areas.backend.database.database import UserModel
+        from exceptions.exceptions import UserNotFoundError
+        from database.database import UserModel
         user: UserModel = UserModel.query.filter_by(id=str(user_id)).first()
         if user is None:
             raise UserNotFoundError

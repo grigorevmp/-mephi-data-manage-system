@@ -67,4 +67,4 @@ def create_app(testing=False, db_uri=app_db.SQLALCHEMY_DATABASE_URI):
 
 if __name__ == '__main__':
     app = create_app()  # pragma: no cover
-    app.run()  # pragma: no cover # TODO USE PRODUCTION SERVER
+    app.run(host='0.0.0.0')  # pragma: no cover # TODO USE PRODUCTION SERVER

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from areas.backend.core import department
-from areas.backend.core import user
-from areas.backend.core.user_manager import UserNotFoundError
+from core import department
+from core import user
+from core.user_manager import UserNotFoundError
 
 
 class DepartmentNotFoundError(Exception):

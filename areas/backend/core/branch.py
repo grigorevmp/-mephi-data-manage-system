@@ -1,8 +1,7 @@
 from typing import Optional
 from uuid import UUID, uuid4
 
-import areas
-from areas.backend.core.document import Document
+from core.document import Document
 
 
 class Branch:

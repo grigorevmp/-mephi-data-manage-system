@@ -3,9 +3,9 @@ from typing import List
 from flask import current_app
 from sqlalchemy.orm import Mapped
 
-from areas.backend.app_db import get_current_db
-from areas.backend.core.accesses import Access, AccessType
-from areas.backend.core.role import Role
+from app_db import get_current_db
+from core.accesses import Access, AccessType
+from core.role import Role
 
 db = get_current_db(current_app)
 

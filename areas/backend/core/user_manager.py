@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import List, Optional
 from uuid import UUID
 
-from areas.backend.core import user
+from core import user
 
 
 class UserNotFoundError(Exception):

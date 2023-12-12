@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import Optional
 from uuid import UUID, uuid4
 
-from areas.backend.core import department_manager
-from areas.backend.core.role import Role
-from areas.backend.core import workspace
+from core import department_manager
+from core.role import Role
+from core import workspace
 
 
 class User:

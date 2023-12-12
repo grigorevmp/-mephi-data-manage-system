@@ -2,16 +2,16 @@ from enum import Enum
 from typing import Optional, BinaryIO
 from uuid import UUID
 
-from areas.backend.core.accesses import BaseAccess, AccessType
-from areas.backend.core.branch import Branch
-from areas.backend.core.document import Document
-from areas.backend.core.request import Request
-from areas.backend.core.request_status import RequestStatus
-from areas.backend.core.workspace import WorkSpace
-from areas.backend.core.workspace_status import WorkSpaceStatus
-from areas.backend.exceptions.exceptions import NotAllowedError
-from areas.backend.service.access_service import AccessService
-from areas.backend.service.data_store_service import DataStoreService
+from core.accesses import BaseAccess, AccessType
+from core.branch import Branch
+from core.document import Document
+from core.request import Request
+from core.request_status import RequestStatus
+from core.workspace import WorkSpace
+from core.workspace_status import WorkSpaceStatus
+from exceptions.exceptions import NotAllowedError
+from service.access_service import AccessService
+from service.data_store_service import DataStoreService
 
 
 class AccessEditTypeEnum(Enum):

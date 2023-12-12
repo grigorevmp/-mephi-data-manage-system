@@ -1,6 +1,6 @@
 import pytest
 
-from areas.backend.core.role import Role
+from core.role import Role
 
 
 class TestRole:

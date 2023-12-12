@@ -2,8 +2,8 @@ from functools import wraps
 from flask import jsonify, request
 from jwt import InvalidTokenError
 
-from areas.backend.controller.user_controller import UserController
-from areas.backend.core.role import Role
+from controller.user_controller import UserController
+from core.role import Role
 
 userController = UserController()
 

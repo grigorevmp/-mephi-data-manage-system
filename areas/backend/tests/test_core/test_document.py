@@ -3,7 +3,7 @@ import uuid
 
 import pytest
 
-from areas.backend.core.document import Document
+from core.document import Document
 
 
 @pytest.fixture()

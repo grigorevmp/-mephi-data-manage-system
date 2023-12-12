@@ -10,18 +10,18 @@ from minio import Minio
 from sqlalchemy import delete, or_
 from sqlalchemy import update
 
-from areas.backend.app_db import get_current_db
-from areas.backend.config import endpoint, secret_key, access_key
-from areas.backend.core.accesses import UrlAccess, AccessType, DepartmentAccess, UserAccess
-from areas.backend.core.branch import Branch
-from areas.backend.core.document import Document
-from areas.backend.core.request import Request
-from areas.backend.core.request_status import RequestStatus
-from areas.backend.core.workspace import WorkSpace
-from areas.backend.core.workspace_status import WorkSpaceStatus
-from areas.backend.database.database import UserModel, WorkspaceModel, RequestModel, BranchModel, DepartmentModel, \
+from app_db import get_current_db
+from config import endpoint, secret_key, access_key
+from core.accesses import UrlAccess, AccessType, DepartmentAccess, UserAccess
+from core.branch import Branch
+from core.document import Document
+from core.request import Request
+from core.request_status import RequestStatus
+from core.workspace import WorkSpace
+from core.workspace_status import WorkSpaceStatus
+from database.database import UserModel, WorkspaceModel, RequestModel, BranchModel, DepartmentModel, \
     BaseAccessModel, DocumentModel
-from areas.backend.exceptions.exceptions import UserNotFoundError, SpaceNotFoundError, NotAllowedError
+from exceptions.exceptions import UserNotFoundError, SpaceNotFoundError, NotAllowedError
 
 
 class DataStoreStorageRepository:
@@ -616,7 +616,7 @@ class DataStoreStorageRepository:
             raise NotAllowedError()
 
     def change_workspace_owner(self, space_id: uuid.UUID, owner: uuid.UUID):
-        from areas.backend.database.database import UserModel
+        from database.database import UserModel
         user: UserModel = UserModel.query.filter_by(id=str(owner)).first()
         if user is None:
             raise UserNotFoundError
