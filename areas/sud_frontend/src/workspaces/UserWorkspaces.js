@@ -461,7 +461,7 @@ function UserWorkspaces() {
                         <h3>Все ветки</h3>
                         <div className="all-branches">
                             {workspace.branches.length > 0 ? (<ul className="all-branches-container">
-                                {workspace.branches.map(branch => (<li
+                                {workspace.branches.map(branch => (branch.status < 2 && <li
                                     className="branch-item"
                                     key={branch.id}
                                     onClick={() => goToBranch(workspace.id, branch.id)}
@@ -475,7 +475,7 @@ function UserWorkspaces() {
                         <div className="all-request">
                             {workspace.requests.length > 0 ? (<ul className="all-requests-container">
                                 {workspace.requests.map(request => (
-                                    <li onClick={() => goToRequest(workspace.id, request.source_branch_id, request.id)}
+                                    <li onClick={() => goToRequest(workspace.id, request.id)}
                                         className="request-item" key={request.id}>
                                         <div>{request.title}</div>
                                         <div>{request.description}</div>
@@ -674,8 +674,8 @@ function goToSearch(name) {
     window.location.href = `/search/${name}`;
 }
 
-function goToRequest(space_id, branch_id, request_id) {
-    window.location.href = `/request/${space_id}/${branch_id}/${request_id}`;
+function goToRequest(space_id, request_id) {
+    window.location.href = `/request/${space_id}/${request_id}`;
 }
 
 export default UserWorkspaces;

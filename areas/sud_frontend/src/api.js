@@ -395,7 +395,20 @@ export async function close_request(space_id, request_id) {
     if (!response.ok) {
         throw new Error('Archiving failed');
     }
+    
+    return response.status;
+}
 
+export async function merge_request(space_id, request_id) {
+    const response = await fetch(`${API_BASE_URL}/workspace/${space_id}/request/${request_id}/force_merge`, {
+        method: 'POST', headers: {
+            'Content-Type': 'application/json',
+        }, body: JSON.stringify(request_id), credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Archiving failed');
+    }
 
     return response.status;
 }
