@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import update
 
 from core.accesses import AccessType
-from core.department_manager import DepartmentManager
+from core.department_manager import DepartmentManager, DepartmentNotFoundError
 from core.user import User
 from core.department import Department
 from flask import current_app
@@ -172,7 +172,8 @@ class UserRepository:
     def add_users_to_department(self, department_name: str, users: List[str]) -> Department:
         from database.database import DepartmentModel, UserModel
         department_model: DepartmentModel = DepartmentModel.query.filter_by(name=department_name).first()
-
+        if department_model is None:
+            raise DepartmentNotFoundError
         for user in users:
             user_model: UserModel = UserModel.query.filter_by(id=str(user)).first()
 

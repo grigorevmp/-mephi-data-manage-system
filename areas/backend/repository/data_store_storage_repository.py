@@ -857,7 +857,7 @@ class DataStoreStorageRepository:
     def save_file_to_cloud(self, file_name):
         self.minio_client.fput_object("sud", file_name, f"cache/{file_name}")
         print(f"'cache/{file_name}' is successfully uploaded as object 'test_file.py' to bucket 'cloud_storage'.")
-        # os.remove(f"cache/{file_name}")
+        os.remove(f"cache/{file_name}")
 
     def get_binary_file_from_cloud_by_id(self, file_name: str) -> BinaryIO:
         return BytesIO(self.get_file_from_cloud(f"{file_name}"))
