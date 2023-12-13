@@ -102,7 +102,6 @@ class TestAdminDepartment:
                       dep['department_name'] == req_data["department_name"]]
         assert len(department) == 0
 
-    @pytest.mark.xfail(reason='No handler for this case')
     def test_negative_add_user_to_department_3_8(self, app_client_admin):
         """
         Номер теста 3.8
@@ -118,5 +117,5 @@ class TestAdminDepartment:
                                                        json=req_data2)
         assert add_user_to_department.status_code == 404
 
-        db_user = UserModel.query.filter_by(user_id=casual_user_id).first()
+        db_user = UserModel.query.filter_by(id=casual_user_id).first()
         assert db_user.department_id is None
