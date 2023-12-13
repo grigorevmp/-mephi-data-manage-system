@@ -8,7 +8,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  testing:
+  test_core:
 
     runs-on: ubuntu-latest
 
@@ -19,13 +19,29 @@ jobs:
       with:
         python-version: "3.11"
     - name: Install dependencies
-      working-directory: areas/backend
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install pytest
+        pip install pytest-xdist
     - name: Core tests
       working-directory: areas/backend
       run: python3 -m pytest -n auto ./tests/test_core
-    - name: API tests
-      working-directory: areas/backend
-      run: python3 -m pytest -n auto ./tests/test_new_api
+
+  test_api:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        working-directory: areas/backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: API tests
+        working-directory: areas/backend
+        run: python3 -m pytest -n auto ./tests/test_new_api

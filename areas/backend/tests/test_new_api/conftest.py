@@ -88,6 +88,26 @@ def casual_user():
         return test_user
 
 
+@pytest.fixture(scope='function')
+def casual_user_2():
+    from app_db import get_current_db
+    with app_testing.app_context():
+        db_ = get_current_db(app_testing)
+        from database.database import UserModel
+        from core.role import Role
+        test_user = UserModel(
+            email=casual_user_email2,
+            id=casual_user_id2,
+            username='user',
+            passwordHash=hashpw(str('password').encode(), gensalt()).decode(),
+            role=Role.Client
+        )
+
+        db_.session.add(test_user)
+        db_.session.commit()
+        return test_user
+
+
 # @pytest.fixture(scope='function')
 # def fill_db(admin_user, casual_user, department):
 #     data = {
