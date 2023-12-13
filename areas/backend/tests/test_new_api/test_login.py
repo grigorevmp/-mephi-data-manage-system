@@ -1,6 +1,6 @@
 import pytest
 
-from tests.test_cc.conftest_constants import invalid_token
+from tests.test_new_api.conftest_constants import invalid_token
 
 
 class TestLogin:
