@@ -74,4 +74,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test_logs
-          path: areas/backend/tests/test_ui/tmp/test.log
+          path: areas/backend/tmp/test.log
