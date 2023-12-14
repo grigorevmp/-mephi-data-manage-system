@@ -73,5 +73,5 @@ jobs:
       - name: Archive tests logs
         uses: actions/upload-artifact@v3
         with:
-          name: test_logs
+          name: test_logs.log
           path: areas/backend/tmp/test.log
