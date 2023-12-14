@@ -67,6 +67,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: API tests
+      - name: UI tests
         working-directory: areas/backend
-        run: python3 -m pytest --headless ./tests/test_ui
+        run: python3 -m pytest --headless --debug_log ./tests/test_ui
+      - name: Archive tests logs
+        uses: actions/upload-artifact@v3
+        with:
+          name: test_logs
+          path: areas/backend/tests/test_ui/tmp/test.log
