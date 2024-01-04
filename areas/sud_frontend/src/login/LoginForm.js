@@ -6,10 +6,11 @@ import './LoginForm.css';
 function LoginForm({onLogin}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        onLogin(email, password);
+        onLogin(email, password, setErrorMessage);
     };
 
     return (
@@ -17,6 +18,7 @@ function LoginForm({onLogin}) {
             <header className="login-header">
                 Авторизация
             </header>
+            {errorMessage && <div className="error-message">{errorMessage}</div>}
             <form className="login-form" onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label htmlFor="email">Электронная почта</label>
@@ -44,24 +46,22 @@ function LoginForm({onLogin}) {
         </div>);
 }
 
-export async function handleLogin(email, password) {
+export async function handleLogin(email, password, setErrorMessage) {
   try {
         const response = await loginUser({email, password});
 
-        // Handle the response as needed... For example, save the token to localStorage
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
 
-            window.location.href = '/workspaces'; // Redirect to the workspaces page
-            // Show the user's workspaces, assuming Search() renders the required content
+            window.location.href = '/workspaces';
             console.error('Login was successful, no token provided in the response.');
         } else {
-            // If the response doesn't contain a token, let's log an error
             console.error('Login was unsuccessful, no token provided in the response.');
+            setErrorMessage('Проверьте логин и пароль');
         }
     } catch (error) {
-        // Handle error, e.g., log it to the console or show an error message to the user
         console.error('An error occurred during login:', error);
+        setErrorMessage('Проверьте логин и пароль');
     }
 }
 

@@ -16,6 +16,7 @@ const API_BASE_URL = 'http://localhost:5000';
 function UserWorkspaces() {
     const [workspace, setWorkspace] = useState("");
     const [search, setSearch] = useState("Поиск");
+    const [searchError, setSearchError] = useState('');
     const [workspaces, setWorkspaces] = useState([]);
     const [workspaces_access, setWorkspaces_access] = useState([]);
     const [workspaces_open, setWorkspaces_open] = useState([]);
@@ -35,6 +36,8 @@ function UserWorkspaces() {
     const [addDepartmentAccessOpen, setDepartmentAccessOpen] = useState(false);
 
     const [title, setTitle] = useState('');
+    const [titleError, setTitleError] = useState('');
+    const [resultError, setResultError] = useState(null);
     const [description, setDescription] = useState('');
 
     const STATUS_MAP = {
@@ -240,6 +243,7 @@ function UserWorkspaces() {
                     onChange={(e) => setTitle(e.target.value)}
                     required
                 />
+                {titleError === "Введите заголовок" && <div className="error-message">{titleError}</div>} {}
             </div>
             <div className="form-group">
                 <label htmlFor="description">Описание</label>
@@ -258,16 +262,29 @@ function UserWorkspaces() {
                     id="fileUpload"
                     onChange={handleFileChange}
                 />
+                {resultError === "Загрузите файл" && <div className="error-message">{resultError}</div>} {}
+            </div>
+
+            <div id="fullscreenLoader" className="loader-cover">
+                <div className="loader"/>
             </div>
             <button className="add-workspace-button"
-                    onClick={() => handleWorkspaceAdding(title, description, file, result)}>Сохранить
+                    onClick={() => {
+                        if (title !== "" && result !== null) {
+                            handleWorkspaceAdding(title, description, file, result)
+                            document.getElementById('fullscreenLoader').style.display = 'flex';
+                        } else {
+                            if (title === "") setTitleError("Введите заголовок");
+                            if (result === null) setResultError("Загрузите файл");
+                        }
+                    }}>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={toggleDialog}>Закрыть</button>
         </div>)}
 
         {/*/ ДИАЛОГ ДОБАВЛЕНИЯ ДОСТУПА ПО ПОЧТЕ/*/}
         {addUserAccessOpen && (<div className="dialog-container">
-            <h3>
+        <h3>
                 Добавить доступ для пользователя
             </h3>
             <div className="form-group">
@@ -376,22 +393,26 @@ function UserWorkspaces() {
                     style={{cursor: "pointer"}}
                 >🏠</span>Рабочие пространства</h2>
 
-                <input
-                    type="text"
-                    id="search"
-                    enterKeyHint={"search"}
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    onKeyDown={(event) => {
-                        if (event.key === 'Enter') {
-                            goToSearch(search)
-
-                        }
-                    }
-                    }
-                    required
-                />
-
+                <div className="search-container">
+                    <input
+                        type="text"
+                        id="search"
+                        enterKeyHint={"search"}
+                        value={search}
+                        className={searchError === "Введите название документа для поиска" ? 'input-error' : 'input-search'}
+                        onChange={(e) => {
+                            setSearch(e.target.value)
+                        }}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                                if (search !== "") goToSearch(search); else setSearchError('Введите название документа для поиска');
+                            }
+                        }}
+                        required
+                    />
+                    {searchError === "Введите название документа для поиска" &&
+                        <div className="error-message">{searchError}</div>} {}
+                </div>
                 <div className="username-info-right">
                     <div className="username" onClick={() => goToProfile()}>
                         <p className="request-content">{username}</p>

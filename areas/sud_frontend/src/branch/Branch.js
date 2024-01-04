@@ -25,6 +25,7 @@ function Branch() {
     const [isRenameDocumentOpen, setRenameDocumentOpen] = useState(false);
 
     const [title, setTitle] = useState('');
+    const [titleError, setTitleError] = useState('');
     const [description, setDescription] = useState('');
     const [fileContent, setFileContent] = useState('');
     const [name, setName] = useState('');
@@ -332,9 +333,23 @@ function Branch() {
                     onChange={(e) => setTitle(e.target.value)}
                     required
                 />
+                {titleError === "Введите заголовок" && <div className="error-message">{titleError}</div>} {}
             </div>
+
+            <div id="fullscreenLoader" className="loader-cover">
+                <div className="loader"/>
+            </div>
+
             <button className="add-workspace-button"
-                    onClick={() => handleBranchAdding(space_id, title, branch.document_id, branch.id)}>Сохранить
+                    onClick={() => {
+                        if (title !== "") {
+                            handleBranchAdding(space_id, title, branch.document_id, branch.id)
+
+                            document.getElementById('fullscreenLoader').style.display = 'flex';
+                        } else {
+                            if (title === "") setTitleError("Введите заголовок");
+                        }
+                    }}>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={toggleCreate}>Закрыть</button>
         </div>)}

@@ -142,6 +142,19 @@
     background-color: #343434;
 }
 
+.input-error {
+    padding: 5px;
+    border-radius: 10px;
+    font-size: medium;
+    border-color: red;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
 .username p {
     margin: 5px;
     color: white;
@@ -169,10 +182,9 @@
     cursor: pointer;
 }
 
-input#search {
+.input-search {
     padding: 5px;
     border-radius: 10px;
-    width: 20%;
     font-size: medium;
 }
 

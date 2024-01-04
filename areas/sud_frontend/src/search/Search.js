@@ -1,10 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import './Search.css';
-import {
-    add_request, add_branch, delete_branch, view_file, download_file, rename_file, add_workspace, upload_file
-} from "../api";
 import {useParams} from "react-router-dom";
-import {handleWorkspaceAdding} from "../workspaces/UserWorkspaces";
 
 const API_BASE_URL = 'http://localhost:5000';
 
@@ -14,6 +10,7 @@ function Search() {
     const [documents, setDocuments] = useState([]);
     const [username, setUsername] = useState("Anonim");
     const [search, setSearch] = useState("Поиск");
+    const [searchError, setSearchError] = useState('');
     const [error, setError] = useState(null);
     const [branch, setBranch] = useState("");
     const [spaceId, setSpaceId] = useState("");
@@ -99,17 +96,24 @@ function Search() {
                         >🏠</span> Поиск
                 </h2>
 
-                <form onSubmit={(e) => {
-                    goToSearch(search)
-                }}>
+                <div className="search-container">
                     <input
                         type="text"
                         id="search"
+                        className={searchError === "Введите название документа для поиска" ? 'input-error' : 'input-search'}
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={(e) => {
+                            setSearch(e.target.value)
+                        }}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                                if (search !== "") goToSearch(search); else setSearchError('Введите название документа для поиска');
+                            }
+                        }}
                         required
                     />
-                </form>
+                    {searchError === "Введите название документа для поиска" && <div className="error-message">{searchError}</div>} {}
+                </div>
 
                 <div className="username-info-right">
                     <div className="username" onClick={() => goToProfile()}>
@@ -163,7 +167,9 @@ function Search() {
                                     <br/>
                                 </div>
 
-                                <button className="workspace-archive" onClick={ () => {goToBranch(spaceId, branch.id)}}><p>Открыть ветку</p></button>
+                                <button className="workspace-archive" onClick={() => {
+                                    goToBranch(spaceId, branch.id)
+                                }}><p>Открыть ветку</p></button>
 
                             </div>
                         </div>

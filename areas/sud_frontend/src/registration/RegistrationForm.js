@@ -7,11 +7,12 @@ function RegistrationForm({onRegistration}) {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const [role] = useState('1');
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        onRegistration(email, password, username, role);
+        onRegistration(email, password, username, role, setErrorMessage);
     };
 
     return (
@@ -19,6 +20,7 @@ function RegistrationForm({onRegistration}) {
             <header className="login-header">
                 Регистрация
             </header>
+            {errorMessage && <div className="error-message">{errorMessage}</div>}
             <form className="login-form" onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label htmlFor="email">Электронная почта</label>
@@ -56,8 +58,8 @@ function RegistrationForm({onRegistration}) {
         </div>);
 }
 
-export async function handleRegistration(email, password, username, role) {
-  try {
+export async function handleRegistration(email, password, username, role, setErrorMessage) {
+    try {
         const response = await registerUser({email, password, username, role});
 
         // Handle the response as needed... For example, save the token to localStorage
@@ -70,10 +72,12 @@ export async function handleRegistration(email, password, username, role) {
         } else {
             // If the response doesn't contain a token, let's log an error
             console.error('Registration was unsuccessful, no token provided in the response.');
+            setErrorMessage('Неыозможно зарегистрировать данного юзера');
         }
     } catch (error) {
         // Handle error, e.g., log it to the console or show an error message to the user
         console.error('An error occurred during login:', error);
+        setErrorMessage('Неыозможно зарегистрировать данного юзера');
     }
 }
 

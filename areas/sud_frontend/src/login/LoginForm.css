@@ -14,6 +14,11 @@
     flex-direction: column;
 }
 
+.error-message {
+    color: red;
+    font-size: medium;
+}
+
 .login-form {
     display: flex;
     width: 20%;
