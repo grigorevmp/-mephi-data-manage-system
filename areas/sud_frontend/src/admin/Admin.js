@@ -20,9 +20,10 @@ function Admin() {
     const [departments, setDepartments] = useState([]);
     const [users, setUsers] = useState([]);
     const [error, setError] = useState(null);
-    const [name, setName] = useState(null);
+    const [name, setName] = useState('');
     const [departmentName, setDepartmentName] = useState(null);
     const [status, setStatus] = useState(1);
+    const [titleError, setTitleError] = useState('');
 
     const [username, setUsername] = useState("Аноним");
     const [userId, setUserId] = useState("");
@@ -226,9 +227,16 @@ function Admin() {
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
+                {titleError === "Введите заголовок" && <div className="error-message">{titleError}</div>} {}
             </div>
             <button className="add-workspace-button"
-                    onClick={() => handleDepartmentAdding(name)}>Сохранить
+                    onClick={() => {
+                        if (name !== '') {
+                            handleDepartmentAdding(name)
+                        } else {
+                            if (name === "") setTitleError("Введите заголовок");
+                        }
+                    }}>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={toggleDepartmentDialog}>Закрыть</button>
         </div>)}

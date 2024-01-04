@@ -218,6 +218,7 @@ function Branch() {
                     onChange={(e) => setTitle(e.target.value)}
                     required
                 />
+                {titleError === "Введите заголовок" && <div className="error-message">{titleError}</div>} {}
             </div>
             <div className="form-group">
                 <label htmlFor="description">Описание</label>
@@ -230,7 +231,16 @@ function Branch() {
                 />
             </div>
             <button className="add-workspace-button"
-                    onClick={() => handleRequestAdding(space_id, title, description, branch.id, branch.parent)}>Сохранить
+                    onClick={() => {
+                        if (title !== "") {
+                            handleRequestAdding(space_id, title, description, branch.id, branch.parent)
+                            document.getElementById('fullscreenLoader').style.display = 'flex';
+                        } else {
+                            if (title === "") setTitleError("Введите заголовок");
+                        }
+                    }
+
+                    }>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={toggleDialog}>Закрыть</button>
         </div>)}
