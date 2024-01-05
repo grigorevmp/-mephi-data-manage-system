@@ -314,6 +314,7 @@ def add_workspace():
     try:
         title = request_data['title']
         document_name = request_data['document_name']
+        task = request_data['task']
         document_data = request_data['document_data'].split("base64,")[1]
 
         description = request_data['description']
@@ -333,7 +334,7 @@ def add_workspace():
             status=WorkSpaceStatus.Active.value,
         )
 
-        new_file_id = dataStoreController.create_workspace(user.email, workspace, document_name, document_data)
+        new_file_id = dataStoreController.create_workspace(user.email, workspace, document_name, document_data, task)
     except ItemNotFoundError:
         return jsonify({'error': 'Incorrect directory'}), 404
     except NotAllowedError:

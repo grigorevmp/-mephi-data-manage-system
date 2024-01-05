@@ -44,6 +44,7 @@ function UserWorkspaces() {
     const [titleError, setTitleError] = useState('');
     const [resultError, setResultError] = useState(null);
     const [description, setDescription] = useState('');
+    const [task, setTask] = useState('');
     const [notExistsUserError, setNotExistsUserError] = useState('');
     const [notExistsDepError, setNotExistsDepError] = useState('');
 
@@ -267,6 +268,16 @@ function UserWorkspaces() {
                 />
             </div>
             <div className="form-group">
+                <label htmlFor="task">Задача</label>
+                <input
+                    type="task"
+                    id="task"
+                    value={task}
+                    onChange={(e) => setTask(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="form-group">
                 <label htmlFor="fileUpload">Загрузить файл</label>
                 <input
                     type="file"
@@ -282,7 +293,7 @@ function UserWorkspaces() {
             <button className="add-workspace-button"
                     onClick={() => {
                         if (title !== "" && result !== null) {
-                            handleWorkspaceAdding(title, description, file, result)
+                            handleWorkspaceAdding(title, description, task, file, result)
                             document.getElementById('fullscreenLoader').style.display = 'flex';
                         } else {
                             if (title === "") setTitleError("Введите заголовок");
@@ -547,7 +558,7 @@ function UserWorkspaces() {
     </div>);
 }
 
-export async function handleWorkspaceAdding(title, description, file, result) {
+export async function handleWorkspaceAdding(title, description, task, file, result) {
     console.error(file);
     console.error(file.name);
     // const document_data = new FormData();
@@ -564,7 +575,7 @@ export async function handleWorkspaceAdding(title, description, file, result) {
     // const document_data = new Blob([arrayBuffer], {type: file.type});
 
     try {
-        const response = await add_workspace({title, description, document_name, document_data});
+        const response = await add_workspace({title, description, task, document_name, document_data});
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);

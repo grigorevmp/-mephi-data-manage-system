@@ -67,8 +67,8 @@ class DataStoreController:
         new_status = WorkSpaceStatus.get_enum_from_value(new_status) if new_status is not None else None
         return self.data_store_service.update_workspace(space_id, new_status, new_owner)
 
-    def create_workspace(self, user_mail: str, workspace: WorkSpace, document_name: str, document_data: str):
-        return self.data_store_service.create_workspace(user_mail, workspace, document_name, document_data)
+    def create_workspace(self, user_mail: str, workspace: WorkSpace, document_name: str, document_data: str, task: str):
+        return self.data_store_service.create_workspace(user_mail, workspace, document_name, document_data, task)
 
     def get_all_workspaces(self, page: int, limit: int, deleted: bool) -> list[(str, WorkSpace)]:
         return self.data_store_service.get_all_workspaces(page, limit, deleted)

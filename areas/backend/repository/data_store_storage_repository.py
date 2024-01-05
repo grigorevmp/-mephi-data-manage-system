@@ -458,7 +458,7 @@ class DataStoreStorageRepository:
             _id=workspace.id,
         ))
 
-    def create_workspace(self, user_mail: str, workspace: WorkSpace, document_name: str, document_data: str):
+    def create_workspace(self, user_mail: str, workspace: WorkSpace, document_name: str, document_data: str, task: str):
         user: UserModel = UserModel.query.filter_by(email=user_mail).first()
 
         workspace_id = str(uuid.uuid4())
@@ -487,10 +487,15 @@ class DataStoreStorageRepository:
             user_id=user.id,
         )
 
+        try:
+            task = uuid.UUID(task)
+        except:
+            task = None
+
         self.db.session.add(_workspace)
         self.db.session.commit()
 
-        document = Document(name=document_name, file=file_id, task_id=uuid.uuid4(),
+        document = Document(name=document_name, file=file_id, task_id=task,
                             time=datetime.datetime.now(), _id=file_id)
         self.add_new_document(document, document_data, _branch)
 

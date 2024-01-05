@@ -159,13 +159,13 @@ function Search() {
                                     </p>
                                 </p>}
 
-                                <p className="request-content">
+                                {branch.task_id !== "None"  && <p className="request-content">
                                     <b>Привязанная задача: </b>
                                     <a href={`http://jira.com/${branch.task_id}`} target="_blank"
                                        rel="noopener noreferrer">
                                         {branch.task_id}
                                     </a>
-                                </p>
+                                </p>}
 
                                 <div className="document-action-block">
                                     <p className="request-content document-name-title"><b>Имя:</b> {branch.document}</p>
