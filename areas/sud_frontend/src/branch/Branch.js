@@ -198,6 +198,10 @@ function Branch() {
 
     return (<div className="page">
 
+
+        <div id="fullscreenLoader" className="loader-cover">
+            <div className="loader"/>
+        </div>
         {/*/ ДИАЛОГ ПРОСМОТРА ФАЙЛА /*/}
 
         {isViewDocumentOpen && (<div className="dialog-container">
@@ -277,7 +281,10 @@ function Branch() {
                 />
             </div>
             <button className="add-workspace-button"
-                    onClick={() => handleWorkspaceAddingByCopy(space_id, branch_id, title, description)}>Сохранить
+                    onClick={() => {
+                        document.getElementById('fullscreenLoader').style.display = 'flex';
+                        handleWorkspaceAddingByCopy(space_id, branch_id, title, description)
+                    }}>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={toggleCopy}>Закрыть</button>
         </div>)}
@@ -349,10 +356,6 @@ function Branch() {
                     required
                 />
                 {titleError === "Введите заголовок" && <div className="error-message">{titleError}</div>} {}
-            </div>
-
-            <div id="fullscreenLoader" className="loader-cover">
-                <div className="loader"/>
             </div>
 
             <button className="add-workspace-button"
