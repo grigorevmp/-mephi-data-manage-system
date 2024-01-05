@@ -442,7 +442,13 @@ function Branch() {
                                     </p>
                                 </p>}
 
-                                <p className="request-content"><b>Привязанная задача:</b> {branch.task_id}</p>
+                                <p className="request-content">
+                                    <b>Привязанная задача: </b>
+                                    <a href={`http://jira.com/${branch.task_id}`} target="_blank"
+                                       rel="noopener noreferrer">
+                                        {branch.task_id}
+                                    </a>
+                                </p>
 
                                 <button className="workspace-archive" onClick={toggleCopy}><p>Копировать ветку в
                                     новое рабочее пространство</p></button>
