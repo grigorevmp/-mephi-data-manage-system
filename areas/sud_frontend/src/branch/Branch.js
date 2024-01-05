@@ -30,6 +30,8 @@ function Branch() {
     const [fileContent, setFileContent] = useState('');
     const [name, setName] = useState('');
 
+    const [noEditAccess, setNoEditAccess] = useState(false);
+
     function readFileDataAsBase64(e) {
         const file = e.target.files[0];
 
@@ -59,6 +61,10 @@ function Branch() {
                 setResult(value);
             })
         }
+    };
+
+    const toggleNoEditAccess = () => {
+        setNoEditAccess(!noEditAccess);
     };
 
     const toggleCopy = () => {
@@ -202,6 +208,17 @@ function Branch() {
         <div id="fullscreenLoader" className="loader-cover">
             <div className="loader"/>
         </div>
+
+        {/*/ ДИАЛОГ НЕТ ПРАВ НА РЕДАКТИРОВАНИЕ /*/}
+
+        {noEditAccess && (<div className="dialog-container">
+            <h3>
+                Нет доступа на редактирование файла
+            </h3>
+            <p>Запросите доступ на редактирование у автора воркспейса</p>
+            <button className="add-workspace-button-close" onClick={toggleNoEditAccess}>Закрыть</button>
+        </div>)}
+
         {/*/ ДИАЛОГ ПРОСМОТРА ФАЙЛА /*/}
 
         {isViewDocumentOpen && (<div className="dialog-container">
@@ -306,7 +323,7 @@ function Branch() {
                 />
             </div>
             <button className="add-workspace-button"
-                    onClick={() => handleDocumentRename(branch.document_id, name)}>Сохранить
+                    onClick={() => handleDocumentRename(branch.document_id, name, toggleNoEditAccess, toggleRenameDocumentOpen)}>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={() => {
                 toggleRenameDocumentOpen();
@@ -331,7 +348,7 @@ function Branch() {
                 />
             </div>
             <button className="add-workspace-button"
-                    onClick={() => handleUploadFile(branch.document_id, file, result)}>Сохранить
+                    onClick={() => handleUploadFile(branch.document_id, file, result, toggleNoEditAccess, toggleUploadDocumentOpen)}>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={() => {
                 toggleUploadDocumentOpen();
@@ -448,7 +465,7 @@ function Branch() {
                                        rel="noopener noreferrer">
                                         {branch.task_id}
                                     </a>
-                                </p> }
+                                </p>}
 
                                 <button className="workspace-archive" onClick={toggleCopy}><p>Копировать ветку в
                                     новое рабочее пространство</p></button>
@@ -492,7 +509,7 @@ function Branch() {
     </div>);
 }
 
-export async function handleUploadFile(id, file, result) {
+export async function handleUploadFile(id, file, result, toggleNoEditAccess, toggleUploadDocumentOpen) {
     console.error(file);
     console.error(file.name);
     // const document_data = new FormData();
@@ -509,7 +526,7 @@ export async function handleUploadFile(id, file, result) {
     // const document_data = new Blob([arrayBuffer], {type: file.type});
 
     try {
-        const response = await upload_file(id, {document_name, document_data});
+        const response = await upload_file(id, {document_name, document_data}, );
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
@@ -520,11 +537,13 @@ export async function handleUploadFile(id, file, result) {
             console.error('Registration was unsuccessful, no token provided in the response.');
         }
     } catch (error) {
+        toggleNoEditAccess()
+        toggleUploadDocumentOpen()
         console.error('An error occurred during login:', error);
     }
 }
 
-export async function handleDocumentRename(document_id, new_name) {
+export async function handleDocumentRename(document_id, new_name, toggleNoEditAccess, toggleRenameDocumentOpen) {
     try {
         const response = await rename_file(document_id, new_name);
 
@@ -537,6 +556,8 @@ export async function handleDocumentRename(document_id, new_name) {
             console.error('Registration was unsuccessful, no token provided in the response.');
         }
     } catch (error) {
+        toggleNoEditAccess()
+        toggleRenameDocumentOpen()
         console.error('An error occurred during login:', error);
     }
 }

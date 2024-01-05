@@ -12,7 +12,7 @@ from sqlalchemy import update
 
 from app_db import get_current_db
 from config import endpoint, secret_key, access_key
-from core.accesses import UrlAccess, AccessType, DepartmentAccess, UserAccess
+from core.accesses import UrlAccess, Access, AccessType, DepartmentAccess, UserAccess
 from core.branch import Branch
 from core.branch_status import BranchStatus
 from core.document import Document
@@ -22,7 +22,7 @@ from core.workspace import WorkSpace
 from core.workspace_status import WorkSpaceStatus
 from database.database import UserModel, WorkspaceModel, RequestModel, BranchModel, DepartmentModel, \
     BaseAccessModel, DocumentModel
-from exceptions.exceptions import UserNotFoundError, SpaceNotFoundError, NotAllowedError
+from exceptions.exceptions import UserNotFoundError, SpaceNotFoundError, NotAllowedError, AccessError
 
 
 class DataStoreStorageRepository:
@@ -68,6 +68,26 @@ class DataStoreStorageRepository:
                 for user_ in department.users:
                     if user_.email == user.email:
                         return True
+        return False
+
+    def has_edit_access_to_workspace(self, workspace: WorkSpace, user: UserModel):
+        accesses: list[BaseAccessModel] = BaseAccessModel.query.filter_by(workspace_id=workspace.get_id()).all()
+
+        if self.is_author_of_workspace(user.email, workspace.get_id()):
+            return True
+
+        for access in accesses:
+            if access.access_type == AccessType.Url:
+                return access.access_level == Access.Edit
+            if access.access_type == AccessType.User:
+                if user.email == access.value:
+                    return access.access_level == Access.Edit
+            if access.access_type == AccessType.Department:
+                department: DepartmentModel = DepartmentModel.query.filter_by(name=access.value).first()
+
+                for user_ in department.users:
+                    if user_.email == user.email:
+                        return access.access_level == Access.Edit
         return False
 
     def is_author_of_workspace(self, user_mail: str, space_id: uuid.UUID):
@@ -877,7 +897,7 @@ class DataStoreStorageRepository:
         user: UserModel = UserModel.query.filter_by(email=user_mail).first()
         username, user_id, workspace = self.get_workspace_by_id(user_mail, branch.workspace_id)
 
-        if self.has_access_to_workspace(workspace, user):
+        if self.has_edit_access_to_workspace(workspace, user):
             doc: DocumentModel = DocumentModel.query.filter_by(id=str(document_id)).first()
 
             document_data = BytesIO(self.get_file_from_cloud(doc.id + "_" + doc.name)).read()
@@ -895,6 +915,8 @@ class DataStoreStorageRepository:
                 fh.write(base64.decodebytes(str.encode(new_file_data)))
 
             self.save_file_to_cloud(fn)
+        else:
+            raise AccessError()
 
     def update_document(self, user_mail: str, document_id: uuid.UUID, document_name: str, new_file_data: str) -> uuid.UUID:
         branch: BranchModel = BranchModel.query.filter_by(document_id=str(document_id)).first()
@@ -902,7 +924,7 @@ class DataStoreStorageRepository:
         user: UserModel = UserModel.query.filter_by(email=user_mail).first()
         username, user_id, workspace = self.get_workspace_by_id(user_mail, branch.workspace_id)
 
-        if self.has_access_to_workspace(workspace, user):
+        if self.has_edit_access_to_workspace(workspace, user):
             new_document_id = uuid.uuid4()
 
             new_document: DocumentModel = DocumentModel.query.filter_by(id=str(document_id)).first()
@@ -929,6 +951,8 @@ class DataStoreStorageRepository:
 
             self.save_file_to_cloud(fn)
             return doc.id
+        else:
+            raise AccessError()
 
     @staticmethod
     def get_binary_io_file_from_cache(file_name: str) -> BinaryIO:
