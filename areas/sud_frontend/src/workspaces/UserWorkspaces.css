@@ -198,6 +198,14 @@
     cursor: pointer;
 }
 
+input#readonly {
+    margin-bottom: 20px;
+}
+
+label.readonly {
+    margin-right: 10px;
+}
+
 .workspace-access:hover {
     background-color: #343434;
 }

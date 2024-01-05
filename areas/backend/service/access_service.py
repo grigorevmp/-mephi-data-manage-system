@@ -6,11 +6,15 @@ from decorators.token_required import get_user_by_token
 from exceptions.exceptions import NotAllowedError, SpaceNotFoundError
 from service.data_store_service import DataStoreService
 
+from areas.backend.exceptions.exceptions import UserNotFoundError, DepartmentNotFoundError
+from areas.backend.service.user_service import UserService
+
 
 class AccessService:
 
     def __init__(self):
         self.data_store_service = DataStoreService()
+        self.user_service = UserService()
 
     def get_accesses_for_workspace(self, workspace_id: UUID) -> list[BaseAccess]:
         user = get_user_by_token()
@@ -61,6 +65,9 @@ class AccessService:
         else:
             access_type = Access.Edit
 
+        if not self.user_service.is_user_exists(email):
+            raise UserNotFoundError()
+
         new_access = UserAccess(
             email=email,
             access_type=access_type
@@ -84,6 +91,11 @@ class AccessService:
             name, user_id, workspace = self.data_store_service.get_workspace_by_id(user.email, workspace_id, True)
         except SpaceNotFoundError:
             raise NotAllowedError()
+
+        try:
+            self.user_service.get_department_by_name(department)
+        except DepartmentNotFoundError:
+            raise DepartmentNotFoundError()
 
         if view_only:
             access_type = Access.View

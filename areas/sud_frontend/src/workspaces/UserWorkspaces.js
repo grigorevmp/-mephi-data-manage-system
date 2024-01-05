@@ -14,7 +14,11 @@ import {
 const API_BASE_URL = 'http://localhost:5000';
 
 function UserWorkspaces() {
-    const [workspace, setWorkspace] = useState("");
+    const [workspace, setWorkspace] = useState(() => {
+        // Retrieve the saved state from localStorage, if it exists
+        const savedState = localStorage.getItem('workspaceStorageState');
+        return savedState ? JSON.parse(savedState) : "";
+    });
     const [search, setSearch] = useState("Поиск");
     const [searchError, setSearchError] = useState('');
     const [workspaces, setWorkspaces] = useState([]);
@@ -31,6 +35,7 @@ function UserWorkspaces() {
     const [accesses, setAccesses] = useState([]);
     const [email, setEmail] = useState("Anonim");
     const [department, setDepartment] = useState("Anonim");
+    const [isReadOnly, setIsReadOnly] = useState(false);
 
     const [addUserAccessOpen, setAddUserAccessOpen] = useState(false);
     const [addDepartmentAccessOpen, setDepartmentAccessOpen] = useState(false);
@@ -39,6 +44,8 @@ function UserWorkspaces() {
     const [titleError, setTitleError] = useState('');
     const [resultError, setResultError] = useState(null);
     const [description, setDescription] = useState('');
+    const [notExistsUserError, setNotExistsUserError] = useState('');
+    const [notExistsDepError, setNotExistsDepError] = useState('');
 
     const STATUS_MAP = {
         1: 'Активно', 2: 'В архиве', 3: 'Удалено'
@@ -87,6 +94,10 @@ function UserWorkspaces() {
             reader.readAsDataURL(file);
         });
     }
+
+    useEffect(() => {
+        localStorage.setItem('workspaceStorageState', JSON.stringify(workspace));
+    }, [workspace]);
 
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -284,11 +295,12 @@ function UserWorkspaces() {
 
         {/*/ ДИАЛОГ ДОБАВЛЕНИЯ ДОСТУПА ПО ПОЧТЕ/*/}
         {addUserAccessOpen && (<div className="dialog-container">
-        <h3>
+            <h3>
                 Добавить доступ для пользователя
             </h3>
             <div className="form-group">
                 <label htmlFor="email">Почта пользователя</label>
+                {notExistsUserError !== '' && <div className="error-message">Пользователь не существует</div>} {}
                 <input
                     type="text"
                     id="email"
@@ -297,8 +309,17 @@ function UserWorkspaces() {
                     required
                 />
             </div>
+            <div className="form-group-read-only">
+                <label className="readonly" htmlFor="readonly">Только просмотр</label>
+                <input
+                    type="checkbox"
+                    id="readonly"
+                    checked={isReadOnly}
+                    onChange={() => setIsReadOnly(!isReadOnly)}
+                />
+            </div>
             <button className="add-workspace-button"
-                    onClick={() => handleAddUserAccessWorkspace(workspace.id, email)}>Сохранить
+                    onClick={() => handleAddUserAccessWorkspace(workspace.id, email, setNotExistsUserError, isReadOnly)}>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={toggleAddUserAccessDialog}>Закрыть</button>
         </div>)}
@@ -310,6 +331,7 @@ function UserWorkspaces() {
             </h3>
             <div className="form-group">
                 <label htmlFor="email">Имя отдела</label>
+                {notExistsDepError !== '' && <div className="error-message">Отдел не существует</div>} {}
                 <input
                     type="text"
                     id="department"
@@ -318,8 +340,17 @@ function UserWorkspaces() {
                     required
                 />
             </div>
+            <div className="form-group-read-only">
+                <label className="readonly" htmlFor="readonly">Только просмотр</label>
+                <input
+                    type="checkbox"
+                    id="readonly"
+                    checked={isReadOnly}
+                    onChange={() => setIsReadOnly(!isReadOnly)}
+                />
+            </div>
             <button className="add-workspace-button"
-                    onClick={() => handleAddUserAccessWorkspace(workspace.id, department)}>Сохранить
+                    onClick={() => handleAddDepartmentAccessWorkspace(workspace.id, department, setNotExistsDepError, isReadOnly)}>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={toggleAddDepartmentAccessDialog}>Закрыть
             </button>
@@ -360,19 +391,16 @@ function UserWorkspaces() {
                 </div>) : (<i/>)}
 
                 {!accesses.some(access => access.class === "UrlAccess") && (<button className="access-action-button"
-                                                                                    onClick={() => handleAddUrlAccessWorkspace(workspace.id)}>Добавить
-                    общий
-                    доступ</button>)}
+                                                                                    onClick={() => handleAddUrlAccessWorkspace(workspace.id)}>
+                    Добавить общий доступ</button>)}
                 {accesses.some(access => access.class === "UrlAccess") && (<button className="remove-action-button"
-                                                                                   onClick={() => handleDeleteUrlAccessWorkspace(workspace.id)}>Удалить
-                    общий
-                    доступ</button>)}
-                <button className="access-action-button" onClick={toggleAddUserAccessDialog}>Добавить доступ
-                    пользователю
+                                                                                   onClick={() => handleDeleteUrlAccessWorkspace(workspace.id)}>
+                    Удалить общий доступ</button>)}
+                <button className="access-action-button" onClick={toggleAddUserAccessDialog}>
+                    Добавить доступ пользователю
                 </button>
-                <button className="access-action-button" onClick={toggleAddDepartmentAccessDialog}>Добавить
-                    доступ
-                    отделу
+                <button className="access-action-button" onClick={toggleAddDepartmentAccessDialog}>
+                    Добавить доступ отделу
                 </button>
             </div>
 
@@ -568,20 +596,23 @@ export async function handleWorkspaceArchiving(id) {
     }
 }
 
-export async function handleAddUserAccessWorkspace(space_id, email) {
+export async function handleAddUserAccessWorkspace(space_id, email, setNotExistsUserError, isReadOnly) {
     try {
-        const response = await add_email_access(space_id, email);
+        const response = await add_email_access(space_id, email, isReadOnly);
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
-            goHome()
+
+            window.location.reload();
 
             console.error('Successfully');
         } else {
             console.error('Unsuccessfully');
+            setNotExistsUserError('3');
         }
     } catch (error) {
         console.error('Error:', error);
+        setNotExistsUserError('3');
     }
 }
 
@@ -591,7 +622,7 @@ export async function handleDeleteUserAccessWorkspace(space_id, email) {
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
-            goHome()
+            window.location.reload();
 
             console.error('Successfully');
         } else {
@@ -602,20 +633,22 @@ export async function handleDeleteUserAccessWorkspace(space_id, email) {
     }
 }
 
-export async function handleAddDepartmentAccessWorkspace(space_id, department) {
+export async function handleAddDepartmentAccessWorkspace(space_id, department, setNotExistsDepError, isReadOnly) {
     try {
-        const response = await add_department_access(space_id, department);
+        const response = await add_department_access(space_id, department, isReadOnly);
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
-            goHome()
+            window.location.reload();
 
             console.error('Successfully');
         } else {
             console.error('Unsuccessfully');
+            setNotExistsDepError('3');
         }
     } catch (error) {
         console.error('Error:', error);
+            setNotExistsDepError('3');
     }
 }
 
@@ -625,7 +658,7 @@ export async function handleDeleteDepartmentAccessWorkspace(space_id, department
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
-            goHome()
+            window.location.reload();
 
             console.error('Successfully');
         } else {
@@ -637,13 +670,13 @@ export async function handleDeleteDepartmentAccessWorkspace(space_id, department
 }
 
 
-export async function handleAddUrlAccessWorkspace(space_id, department) {
+export async function handleAddUrlAccessWorkspace(space_id) {
     try {
         const response = await add_url_access(space_id);
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
-            goHome()
+            window.location.reload();
 
             console.error('Successfully');
         } else {
@@ -654,13 +687,13 @@ export async function handleAddUrlAccessWorkspace(space_id, department) {
     }
 }
 
-export async function handleDeleteUrlAccessWorkspace(space_id, department) {
+export async function handleDeleteUrlAccessWorkspace(space_id) {
     try {
         const response = await delete_url_access(space_id);
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
-            goHome()
+            window.location.reload();
 
             console.error('Successfully');
         } else {

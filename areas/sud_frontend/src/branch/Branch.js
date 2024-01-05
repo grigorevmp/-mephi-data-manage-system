@@ -97,6 +97,8 @@ function Branch() {
         })
             .then(async response => {
                 if (!response.ok) {
+                    setFileContent("Невозможно просмотреть файл данного типа");
+                    toggleViewDocument()
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
@@ -108,9 +110,12 @@ function Branch() {
                     toggleViewDocument()
                 } else {
                     setFileContent("Невозможно просмотреть файл данного типа");
+                    toggleViewDocument()
                 }
             })
             .catch(error => {
+                setFileContent("Невозможно просмотреть файл данного типа");
+                toggleViewDocument()
                 setError(error.message);
             });
     };

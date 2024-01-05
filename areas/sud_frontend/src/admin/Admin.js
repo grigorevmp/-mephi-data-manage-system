@@ -34,8 +34,33 @@ function Admin() {
     const [isChangeUserDepartmentOpen, setChangeUserDepartmentOpen] = useState(false);
     const [isChangeWorkspaceOpen, setChangeWorkspaceOpen] = useState(false);
 
+    const [deleteEntity, setDeleteEntity] = useState(null)
+    const [deleteEntity2, setDeleteEntity2] = useState(null)
+    const [deleteWSConfirmDialogOpen, setDeleteWSConfirmDialogOpen] = useState(false);
+    const [deleteUserFromDepDialogOpen, setDeleteUserFromDepDialogOpen] = useState(false);
+    const [deleteDepDialogOpen, setDeleteDepDialogOpen] = useState(false);
+    const [deleteUserDialogOpen, setDeleteUserDialogOpen] = useState(false);
+    const [noDepError, setNoDepError] = useState('');
+
+
     const STATUS_MAP = {
         1: 'Активно', 2: 'В архиве', 3: 'Удалено'
+    };
+
+    const toggleUserDialogOpen = () => {
+        setDeleteUserDialogOpen(!deleteUserDialogOpen);
+    };
+
+    const toggleDepDialogOpen = () => {
+        setDeleteDepDialogOpen(!deleteDepDialogOpen);
+    };
+
+    const toggleUserFromDepDialog = () => {
+        setDeleteUserFromDepDialogOpen(!deleteUserFromDepDialogOpen);
+    };
+
+    const toggleWSConfirmDialog = () => {
+        setDeleteWSConfirmDialogOpen(!deleteWSConfirmDialogOpen);
     };
 
     const toggleDepartmentDialog = () => {
@@ -157,6 +182,11 @@ function Admin() {
 
         {/*/ ДИАЛОГ ИЗМЕНЕНИЯ РАБОЧЕГО ПРОСТРАНСТВА /*/}
 
+
+        <div id="fullscreenLoader" className="loader-cover">
+            <div className="loader"/>
+        </div>
+
         {isChangeWorkspaceOpen && (<div className="dialog-container">
             <h3>
                 Редактировать рабочее пространство
@@ -197,6 +227,7 @@ function Admin() {
             </h3>
             <div className="form-group">
                 <label htmlFor="name">Отдел</label>
+                {noDepError !== "" && <div className="error-message">Отдел не существует</div>} {}
                 <input
                     type="text"
                     id="name"
@@ -206,9 +237,76 @@ function Admin() {
                 />
             </div>
             <button className="add-workspace-button"
-                    onClick={() => handleAddUserToDepartmentDeleting(departmentName, userId)}>Сохранить
+                    onClick={() => handleAddUserToDepartmentDeleting(departmentName, userId, setNoDepError)}>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={toggleChangeUserDepartmentDialog}>Закрыть
+            </button>
+        </div>)}
+
+        {/*/ ДИАЛОГ УДАЛЕНИЯ РАБОЧЕГО ПРОСТРАНСТВА /*/}
+
+        {deleteWSConfirmDialogOpen && (<div className="dialog-container">
+            <h3>
+                Удалить рабочее пространство?
+            </h3>
+            <button className="add-workspace-button"
+                    onClick={() => {
+                        handleDeleteWorkspace(deleteEntity)
+                        document.getElementById('fullscreenLoader').style.display = 'flex';
+                    }}>Удалить
+            </button>
+            <button className="add-workspace-button-close" onClick={toggleWSConfirmDialog}>Закрыть
+            </button>
+        </div>)}
+
+        {/*/ ДИАЛОГ УДАЛЕНИЯ ОТДЕЛА /*/}
+
+        {deleteDepDialogOpen && (<div className="dialog-container">
+            <h3>
+                Удалить отдел?
+            </h3>
+            <button className="add-workspace-button"
+                    onClick={() => {
+                        handleDepartmentDeleting(deleteEntity)
+                        document.getElementById('fullscreenLoader').style.display = 'flex';
+                    }}>Удалить
+            </button>
+            <button className="add-workspace-button-close" onClick={toggleDepDialogOpen}>Закрыть
+            </button>
+        </div>)}
+
+        {/*/ ДИАЛОГ УДАЛЕНИЯ ЮЗЕРА /*/}
+
+        {deleteUserDialogOpen && (<div className="dialog-container">
+            <h3>
+                Удалить пользователя?
+            </h3>
+            <button className="add-workspace-button"
+                    onClick={() => {
+                        handleDeleteUser(deleteEntity)
+                        document.getElementById('fullscreenLoader').style.display = 'flex';
+                    }}>Удалить
+            </button>
+            <button className="add-workspace-button-close" onClick={toggleUserDialogOpen}>Закрыть
+            </button>
+        </div>)}
+
+        {/*/ ДИАЛОГ УДАЛЕНИЯ ЮЗЕРА ИЗ ОТДЕЛА/*/}
+
+        {deleteUserFromDepDialogOpen && (<div className="dialog-container">
+            <h3>
+                Удалить пользователя из отдела?
+            </h3>
+            <button className="add-workspace-button"
+                    onClick={() => {
+                        handleDeleteUserFromDepartmentDeleting(deleteEntity, deleteEntity2)
+                        document.getElementById('fullscreenLoader').style.display = 'flex';
+                    }}>Удалить
+            </button>
+            <button className="add-workspace-button-close" onClick={() => {
+                toggleUserFromDepDialog()
+                toggleUserDepartmentDialog()
+            }}>Закрыть
             </button>
         </div>)}
 
@@ -252,7 +350,10 @@ function Admin() {
                 {userDepartments.map(user_department => (<div>
                     <li className="item-block-inner">{user_department.email}
                         <button className="admin-button-action" onClick={() => {
-                            handleDeleteUserFromDepartmentDeleting(departmentName, user_department.id)
+                            setDeleteEntity(departmentName,)
+                            setDeleteEntity2(user_department.id)
+                            toggleUserDepartmentDialog()
+                            toggleUserFromDepDialog()
                         }}>Удалить
                         </button>
                     </li>
@@ -290,7 +391,7 @@ function Admin() {
                         {workspaces != null && workspaces.length > 0 ? (<ul className="all-workspaces-container">
                             {workspaces.map(workspace => (<li onClick={() => {
                                 setWorkspace(workspace.id)
-                                setWorkspaceOwner(workspace.owner_id)
+                                setWorkspaceOwner(workspace.owner)
                                 setStatus(workspace.status)
                                 toggleChangeWorkspaceOpen()
                             }} key={workspace.id} className="item-block">
@@ -304,8 +405,10 @@ function Admin() {
                                          style={{backgroundColor: getStatusColor(workspace.status)}}>
                                         <p>{STATUS_MAP[workspace.status] || 'Неизвестно'}</p>
                                     </div>
-                                    <button className="admin-button-action" onClick={() => {
-                                        handleDeleteWorkspace(workspace.id)
+                                    <button className="admin-button-action" onClick={(event) => {
+                                        event.stopPropagation();
+                                        setDeleteEntity(workspace.id)
+                                        toggleWSConfirmDialog()
                                     }}>
                                         Удалить
                                     </button>
@@ -327,8 +430,10 @@ function Admin() {
                                     setDepartmentName(department.department_name)
                                     handleUserDepartmentClick(department.department_name)
                                 }} className="item-block">{department.department_name}
-                                    <button className="admin-button-action" onClick={() => {
-                                        handleDepartmentDeleting(department.department_name)
+                                    <button className="admin-button-action" onClick={(event) => {
+                                        event.stopPropagation();
+                                        setDeleteEntity(department.department_name)
+                                        toggleDepDialogOpen()
                                     }}>
                                         Удалить
                                     </button>
@@ -340,7 +445,7 @@ function Admin() {
                     <button className="add-workspace" onClick={toggleDepartmentDialog}><p>+</p></button>
                 </div>
 
-                {/*/ ЮЗВЕРЫ /*/}
+                {/*/ ЮЗВЕРИ /*/}
 
                 <div className="all-workspaces-secondary">
                     <div>
@@ -353,7 +458,8 @@ function Admin() {
                                         <text>{user.id}</text>
                                     </div>
 
-                                    <button className="admin-button-action" onClick={() => {
+                                    <button className="admin-button-action" onClick={(event) => {
+                                        event.stopPropagation();
                                         setUserId(user.id)
                                         setUserName(user.username)
                                         toggleChangeUserDepartmentDialog()
@@ -363,8 +469,10 @@ function Admin() {
 
 
                                     {user.username !== username ? (
-                                        <button className="admin-button-action-accent" onClick={() => {
-                                            handleDeleteUser(user.id)
+                                        <button className="admin-button-action-accent" onClick={(event) => {
+                                            event.stopPropagation();
+                                            setDeleteEntity(user.id)
+                                            toggleUserDialogOpen()
                                         }}>Удалить
                                         </button>) : (
                                         <button className="admin-button-action-disabled">Удалить</button>)}
@@ -447,7 +555,7 @@ export async function handleDepartmentDeleting(department_name) {
     }
 }
 
-export async function handleAddUserToDepartmentDeleting(name, user_id) {
+export async function handleAddUserToDepartmentDeleting(name, user_id, setNoDepError) {
     try {
         const users = [user_id]
         const response = await add_user_to_department(name, users);
@@ -459,9 +567,11 @@ export async function handleAddUserToDepartmentDeleting(name, user_id) {
             console.error('Adding user to department was successful, token provided in the response.');
         } else {
             console.error('Adding user to department unsuccessful, no token provided in the response.');
+            setNoDepError("error")
         }
     } catch (error) {
         console.error('An error occurred during login:', error);
+        setNoDepError("error")
     }
 }
 

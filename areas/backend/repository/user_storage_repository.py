@@ -62,6 +62,12 @@ class UserRepository:
 
         return current_user
 
+    def is_user_exists(self, email: str) -> bool:
+        from database.database import UserModel
+        user: UserModel = UserModel.query.filter_by(email=email).first()
+        return user is not None
+
+
     def get_user_departments_by_id(self, _id: UUID) -> list[str]:
         from database.database import UserModel
         user: UserModel = UserModel.query.filter_by(id=str(_id)).first()

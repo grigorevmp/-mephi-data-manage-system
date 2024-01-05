@@ -65,7 +65,7 @@ class DataStoreService:
             output_list.append(workspaces[index])
         return output_list
 
-    def update_workspace(self, space_id: uuid.UUID | None, new_status: WorkSpaceStatus | None, new_owner: UUID | None):
+    def update_workspace(self, space_id: uuid.UUID | None, new_status: WorkSpaceStatus | None, new_owner: str | None):
         self.data_store_storage_repo.get_workspace_by_id_admin(space_id=space_id)
         if new_status is not None:
             self.data_store_storage_repo.change_workspace_status(space_id=space_id, status=new_status.value, admin=True)

@@ -76,6 +76,9 @@ class UserService:
         departments = self.user_repo.get_user_departments_by_id(user.get_id())
         return departments
 
+    def is_user_exists(self, email: str) -> bool:
+        return self.user_repo.is_user_exists(email)
+
     def add_new_department(self, new_department: Department) -> None:
         try:
             self.user_repo.get_department_by_name(new_department.department_name)

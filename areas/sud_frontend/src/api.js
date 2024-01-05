@@ -298,8 +298,8 @@ export async function delete_url_access(space_id) {
     return response.status;
 }
 
-export async function add_department_access(space_id, department) {
-    const response = await fetch(`${API_BASE_URL}/accesses/${space_id}/department/${department}?view_only=true`, {
+export async function add_department_access(space_id, department, isReadOnly) {
+    const response = await fetch(`${API_BASE_URL}/accesses/${space_id}/department/${department}?view_only=${isReadOnly}`, {
         method: 'PUT', headers: {
             'Content-Type': 'application/json',
         }, credentials: 'include',
@@ -327,8 +327,11 @@ export async function delete_department_access(space_id, department) {
 }
 
 
-export async function add_email_access(space_id, email) {
-    const response = await fetch(`${API_BASE_URL}/accesses/${space_id}/email/${email}?view_only=true`, {
+export async function add_email_access(space_id, email, isReadOnly) {
+
+
+
+    const response = await fetch(`${API_BASE_URL}/accesses/${space_id}/email/${email}?view_only=${isReadOnly}`, {
         method: 'PUT', headers: {
             'Content-Type': 'application/json',
         }, credentials: 'include',

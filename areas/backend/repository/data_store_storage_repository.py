@@ -621,13 +621,13 @@ class DataStoreStorageRepository:
         else:
             raise NotAllowedError()
 
-    def change_workspace_owner(self, space_id: uuid.UUID, owner: uuid.UUID):
+    def change_workspace_owner(self, space_id: uuid.UUID, owner: str):
         from database.database import UserModel
-        user: UserModel = UserModel.query.filter_by(id=str(owner)).first()
+        user: UserModel = UserModel.query.filter_by(username=owner).first()
         if user is None:
             raise UserNotFoundError
         self.db.session.execute(update(WorkspaceModel).where(WorkspaceModel.id == str(space_id)).values(
-            user_id=str(owner)
+            user_id=str(user.id)
         ))
         self.db.session.commit()
         return None

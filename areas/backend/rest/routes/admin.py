@@ -91,7 +91,7 @@ def update_workspace(space_id):
     request_data = request.get_json()
     new_status = request_data['new_status'] if 'new_status' in request_data.keys() else None
     try:
-        new_owner = uuid.UUID(request_data['new_owner']) if 'new_owner' in request_data.keys() else None
+        new_owner = request_data['new_owner'] if 'new_owner' in request_data.keys() else None
     except Exception:
         return jsonify({'error': 'Invalid format of new workspace owner ID'}), 400
     if new_status is None and new_owner is None:
