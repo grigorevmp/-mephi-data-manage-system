@@ -42,6 +42,8 @@ function Admin() {
     const [deleteUserDialogOpen, setDeleteUserDialogOpen] = useState(false);
     const [noDepError, setNoDepError] = useState('');
 
+    const [noUserError, setUserDepError] = useState('');
+
 
     const STATUS_MAP = {
         1: 'Активно', 2: 'В архиве', 3: 'Удалено'
@@ -204,6 +206,7 @@ function Admin() {
                     </select>
                 </label>
                 <label htmlFor="name">Владелец</label>
+                {noUserError !== "" && <div className="error-message">Пользователь не существует</div>} {}
                 <input
                     type="text"
                     id="name"
@@ -213,7 +216,7 @@ function Admin() {
                 />
             </div>
             <button className="add-workspace-button"
-                    onClick={() => updateWorkspace(workspace, status, workspaceOwner)}>Сохранить
+                    onClick={() => updateWorkspace(workspace, status, workspaceOwner, setUserDepError)}>Сохранить
             </button>
             <button className="add-workspace-button-close" onClick={toggleChangeWorkspaceOpen}>Закрыть
             </button>
@@ -503,7 +506,7 @@ export async function handleDeleteWorkspace(space_id) {
     }
 }
 
-export async function updateWorkspace(space_id, new_status, new_owner) {
+export async function updateWorkspace(space_id, new_status, new_owner, setUserDepError) {
     try {
         const response = await update_workspace(space_id, {new_status, new_owner});
 
@@ -514,9 +517,11 @@ export async function updateWorkspace(space_id, new_status, new_owner) {
             console.error('Department adding was successful, token provided in the response.');
         } else {
             console.error('Department adding was unsuccessful, no token provided in the response.');
+            setUserDepError('3')
         }
     } catch (error) {
         console.error('An error occurred during login:', error);
+            setUserDepError('3')
     }
 }
 
