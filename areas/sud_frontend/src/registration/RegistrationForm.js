@@ -72,12 +72,12 @@ export async function handleRegistration(email, password, username, role, setErr
         } else {
             // If the response doesn't contain a token, let's log an error
             console.error('Registration was unsuccessful, no token provided in the response.');
-            setErrorMessage('Неыозможно зарегистрировать данного юзера');
+            setErrorMessage('Невозможно зарегистрировать пользователя с данным логином/почтой');
         }
     } catch (error) {
         // Handle error, e.g., log it to the console or show an error message to the user
         console.error('An error occurred during login:', error);
-        setErrorMessage('Неыозможно зарегистрировать данного юзера');
+        setErrorMessage('Невозможно зарегистрировать пользователя с данным логином/почтой');
     }
 }
 

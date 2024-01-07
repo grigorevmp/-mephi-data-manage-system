@@ -22,18 +22,22 @@ class UserService:
             self.user_repo.get_user_from_db_by_email(email)
             raise AlreadyExistsError
         except UserNotFoundError:
-            new_user = User(
-                email=email,
-                password=password,
-                role=role,
-                username=username,
-                workSpaces=[]
-            )
-            hash = hashpw(
-                str(new_user.password).encode(), gensalt()
-            )
-            new_user.password = hash.decode()
-            self.user_repo.add_new_user_to_db(new_user)
+            try:
+                self.user_repo.get_user_from_db_by_username(username)
+                raise AlreadyExistsError
+            except UserNotFoundError:
+                new_user = User(
+                    email=email,
+                    password=password,
+                    role=role,
+                    username=username,
+                    workSpaces=[]
+                )
+                hash = hashpw(
+                    str(new_user.password).encode(), gensalt()
+                )
+                new_user.password = hash.decode()
+                self.user_repo.add_new_user_to_db(new_user)
 
     def login(self, email: str, password: str) -> str:
         try:

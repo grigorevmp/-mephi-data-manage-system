@@ -90,6 +90,19 @@ class UserRepository:
             role=user.role
         )
 
+    def get_user_from_db_by_username(self, username: str) -> User:
+        from database.database import UserModel
+        user: UserModel = UserModel.query.filter_by(username=username).first()
+        if user is None:
+            raise UserNotFoundError
+        return User(
+            _id=UUID(hex=user.id),
+            email=user.email,
+            username=user.username,
+            password=user.passwordHash,
+            role=user.role
+        )
+
     @staticmethod
     def add_new_user_to_db(new_user: User) -> None:
         from database.database import UserModel

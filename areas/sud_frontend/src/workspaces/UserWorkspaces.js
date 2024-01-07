@@ -14,7 +14,8 @@ import {
 const API_BASE_URL = 'http://localhost:5000';
 
 function UserWorkspaces() {
-    const [workspace, setWorkspace] = useState(() => {
+    const [workspace, setWorkspace] = useState("");
+    const [workspaceId, setWorkspaceId] = useState(() => {
         // Retrieve the saved state from localStorage, if it exists
         const savedState = localStorage.getItem('workspaceStorageState');
         return savedState ? JSON.parse(savedState) : "";
@@ -98,6 +99,30 @@ function UserWorkspaces() {
 
     useEffect(() => {
         localStorage.setItem('workspaceStorageState', JSON.stringify(workspace));
+    }, [workspace]);
+
+
+    useEffect(() => {
+        if (workspaceId !== "") {
+            fetch(`${API_BASE_URL}/get_workspace/${workspaceId.id}`, {
+            method: 'GET', headers: {
+                'Content-Type': 'application/json',
+            }, credentials: 'include',
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                localStorage.setItem('workspaceStorageState', null);
+                return response.json();
+            })
+            .then(data => {
+                setWorkspace(data);
+            })
+            .catch(error => {
+                setError(error.message);
+            });
+        }
     }, [workspace]);
 
     const handleFileChange = (e) => {
