@@ -6,8 +6,8 @@ from decorators.token_required import get_user_by_token
 from exceptions.exceptions import NotAllowedError, SpaceNotFoundError
 from service.data_store_service import DataStoreService
 
-from backend.exceptions.exceptions import UserNotFoundError, DepartmentNotFoundError
-from backend.service.user_service import UserService
+from exceptions.exceptions import UserNotFoundError, DepartmentNotFoundError
+from service.user_service import UserService
 
 
 class AccessService:
