@@ -13,6 +13,7 @@ function Request() {
     const [workspace, setWorkspace] = useState([]);
     const [user, setUser] = useState("Anonim");
     const [error, setError] = useState(null);
+    const [notFound, setNotFound] = useState('');
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -53,6 +54,11 @@ function Request() {
                 })
             })
             .then(response => {
+                if (response.status === 404) {
+                    setNotFound('a');
+                    throw new Error(`К сожалению, запрашеваемая информация была удалена её автором`);
+                }
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -126,8 +132,18 @@ function Request() {
             });
     }, []);
 
-    if (error) {
+    if (error && notFound === '') {
         return <div>Error: {error}</div>;
+    }
+
+    if (notFound !== '') {
+        return (
+            <div className="not-found">
+                <div className="not-found-message">
+                    {error}
+                </div>
+            </div>
+        );
     }
 
     return (

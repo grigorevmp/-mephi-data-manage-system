@@ -26,6 +26,49 @@
     align-items: center;
 }
 
+.error-message {
+    color: #D8000C;
+    background-color: #FFD2D2;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 5px;
+}
+
+/* Styles for the "not found" full-screen center block */
+.not-found {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 1000; /* Ensure it's on top */
+}
+
+.not-found-message {
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Modern shadow */
+}
+
+/* Utility class for full-width and centering text */
+.centered-full-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
 .loader {
     border: 5px solid #f3f3f3; /* Light grey */
     border-top: 5px solid #3498db; /* Blue */

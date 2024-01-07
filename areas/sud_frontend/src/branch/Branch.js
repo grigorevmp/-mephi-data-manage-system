@@ -23,6 +23,7 @@ function Branch() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [isRenameDocumentOpen, setRenameDocumentOpen] = useState(false);
+    const [notFound, setNotFound] = useState('');
 
     const [title, setTitle] = useState('');
     const [titleError, setTitleError] = useState('');
@@ -133,7 +134,10 @@ function Branch() {
             }, credentials: 'include',
         })
             .then(async response => {
-                if (!response.ok) {
+                if (response.status === 404) {
+                    setNotFound('a')
+                    throw new Error(`К сожалению, запрашеваемая информация была удалена её автором`);
+                } else if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const fileBlob = await response.blob();
@@ -164,6 +168,11 @@ function Branch() {
             }, credentials: 'include',
         })
             .then(response => {
+                if (response.status === 404) {
+                    setNotFound('a');
+                    throw new Error(`К сожалению, запрашеваемая информация была удалена её автором`);
+                }
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -198,8 +207,18 @@ function Branch() {
             });
     }, []);
 
-    if (error) {
+    if (error && notFound === '') {
         return <div>Error: {error}</div>;
+    }
+
+    if (notFound !== '') {
+        return (
+            <div className="not-found">
+                <div className="not-found-message">
+                    {error}
+                </div>
+            </div>
+        );
     }
 
     return (<div className="page">
@@ -526,7 +545,7 @@ export async function handleUploadFile(id, file, result, toggleNoEditAccess, tog
     // const document_data = new Blob([arrayBuffer], {type: file.type});
 
     try {
-        const response = await upload_file(id, {document_name, document_data}, );
+        const response = await upload_file(id, {document_name, document_data},);
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
