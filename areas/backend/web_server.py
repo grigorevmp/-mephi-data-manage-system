@@ -4,6 +4,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 from flask_sqlalchemy import SQLAlchemy
 
 import app_db
+from exceptions.exceptions import AlreadyExistsError
 
 
 def create_app(testing=False, db_uri=app_db.SQLALCHEMY_DATABASE_URI):
@@ -36,6 +37,23 @@ def create_app(testing=False, db_uri=app_db.SQLALCHEMY_DATABASE_URI):
         app.register_blueprint(SWAGGER_UI_BLUEPRINT, url_prefix=SWAGGER_URL)
         db.create_all()
         db.session.commit()
+
+        # Добавление админа
+        from controller.user_controller import UserController
+        from core.role import Role
+        user_controller = UserController()
+        try:
+            email = 'admin@mail.ru'
+            password = 'admin'
+            user_controller.registration(
+                email=email,
+                password=password,
+                role=Role.Admin,
+                username='admin'
+            )
+            print(f'Admin account created! Credentials: {email} / {password}')
+        except AlreadyExistsError:
+            print(f'Admin already exists! Credentials: {email} / {password}')
 
     @app.errorhandler(400)
     def handle_400_error(_error):
