@@ -513,6 +513,7 @@ def copy_document(space_id, branch_id):
         except FileNotFoundError:
             return jsonify({'error': 'File not found'}), 404
 
+        task_id = str(item.document.get_task_id())
         item = {
             "document": copy_name,
             "file": file if item.document is not None else "",
@@ -541,7 +542,7 @@ def copy_document(space_id, branch_id):
             main_branch=None,
             status=WorkSpaceStatus.Active.value,
         )
-        new_workspace = dataStoreController.create_workspace(user.email, workspace, item['document'], item["file"])
+        new_workspace = dataStoreController.create_workspace(user.email, workspace, item['document'], item["file"], task_id)
     except ItemNotFoundError:
         return jsonify({'error': 'Incorrect directory'}), 404
     except NotAllowedError:
