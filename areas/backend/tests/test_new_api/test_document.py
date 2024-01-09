@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 from tests.test_new_api.conftest_constants import user1_workspace1_id
@@ -10,7 +12,8 @@ class TestUserDocument:
             'title': 'Test add title',
             'description': 'Test add description',
             'document_name': 'test.txt',
-            'document_data': 'data:@file/plain;base64,VGVzdCBkb2N1bWVudA=='
+            'document_data': 'data:@file/plain;base64,VGVzdCBkb2N1bWVudA==',
+            'task': str(uuid.uuid4())
         }
         response = app_client_user.post(f'/workspace/add', json=req_data)
         assert response.status_code == 200

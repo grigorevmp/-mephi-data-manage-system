@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 from core.workspace_status import WorkSpaceStatus
@@ -57,7 +59,8 @@ class TestUserWorkspace:
             'title': 'Test add title',
             'description': 'Test add description',
             'document_name': 'test.txt',
-            'document_data': 'data:@file/plain;base64,VGVzdCBkb2N1bWVudA=='
+            'document_data': 'data:@file/plain;base64,VGVzdCBkb2N1bWVudA==',
+            'task': str(uuid.uuid4())
         }
         response = app_client_user.post(f'/workspace/add', json=req_data)
         assert response.status_code == 200
@@ -108,7 +111,8 @@ class TestAdminWorkspace:
             'title': 'Test add title',
             'description': 'Test add description',
             'document_name': file_name,
-            'document_data': 'data:@file/plain;base64,VGVzdCBkb2N1bWVudA=='
+            'document_data': 'data:@file/plain;base64,VGVzdCBkb2N1bWVudA==',
+            'task': str(uuid.uuid4())
         }
         response = app_client_user.post(f'/workspace/add', json=req_data)
         assert response.status_code == 200
@@ -180,7 +184,7 @@ class TestAdminWorkspace:
 
         req_data = {
             "new_status": str(WorkSpaceStatus.Active.value),
-            "new_owner": casual_user_id
+            "new_owner": 'user'
         }
         unarchive_workspace = app_client_admin.put(f'/workspace/{workspace_id}', json=req_data)
         assert unarchive_workspace.status_code == 200

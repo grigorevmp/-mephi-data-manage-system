@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 
@@ -8,7 +10,8 @@ class TestUserSearch:
             'title': 'Test add title',
             'description': 'Test add description',
             'document_name': file_name,
-            'document_data': 'data:@file/plain;base64,VGVzdCBkb2N1bWVudA=='
+            'document_data': 'data:@file/plain;base64,VGVzdCBkb2N1bWVudA==',
+            'task': str(uuid.uuid4())
         }
         response = app_client_user.post(f'/workspace/add', json=req_data)
         assert response.status_code == 200
