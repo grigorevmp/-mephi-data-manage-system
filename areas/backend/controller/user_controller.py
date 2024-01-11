@@ -31,8 +31,8 @@ class UserController:
     def get_user_info(self, user: User) -> list[str]:
         return self.user_service.get_user_info(user)
 
-    def add_new_department(self, new_department: Department) -> None:
-        self.user_service.add_new_department(new_department)
+    def add_new_department(self, new_department: Department, head_of_dep_email: str) -> None:
+        self.user_service.add_new_department(new_department, head_of_dep_email)
 
     def delete_department_by_name(self, department_name: str) -> None:
         self.user_service.delete_department_by_name(department_name)

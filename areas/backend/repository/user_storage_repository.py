@@ -56,6 +56,7 @@ class UserRepository:
             current_user.department_manager.add_department(
                 Department(
                     department_name=department.name,
+                    head_of_department=department.head_of_department,
                     users=[]
                 )
             )
@@ -125,7 +126,7 @@ class UserRepository:
     def get_departments(self) -> List[Department]:
         from database.database import DepartmentModel
         departments: List[DepartmentModel] = DepartmentModel.query.all()
-        departments_list = [Department(i.name, []) for i in departments]
+        departments_list = [Department(i.name, i.head_of_department, []) for i in departments]
         return departments_list
 
     def get_users(self) -> List[User]:
@@ -161,12 +162,13 @@ class UserRepository:
         ]
         return Department(
             department_name=department.name,
+            head_of_department=department.head_of_department,
             users=users
         )
 
     def add_new_department(self, new_department: Department) -> None:
         from database.database import DepartmentModel
-        department: DepartmentModel = DepartmentModel(name=new_department.department_name)
+        department: DepartmentModel = DepartmentModel(name=new_department.department_name, head_of_department=str(new_department.head_of_department))
         db.session.add(department)
         db.session.commit()
 

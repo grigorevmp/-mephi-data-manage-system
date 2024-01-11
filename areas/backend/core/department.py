@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 from typing import List, Optional
+from uuid import UUID, uuid4
 
 from core import user
 from core.user_manager import UserNotFoundError
 
 
 class Department:
-    def __init__(self, department_name: str, users: Optional[List[user.User]]):
+    def __init__(self, department_name: str, head_of_department: UUID, users: Optional[List[user.User]]):
         self.__department_name: str = department_name
+        self.__head_of_department: UUID = head_of_department
         self.__users: List[user.User] = users or list()
 
     def get_department_name(self) -> str:
@@ -21,6 +23,17 @@ class Department:
             raise TypeError
 
     department_name = property(get_department_name, set_department_name)
+
+    def get_head_of_department(self) -> UUID:
+        return self.__head_of_department
+
+    def set_head_of_department(self, new_head_of_dep: UUID):
+        if isinstance(new_head_of_dep, UUID):
+            self.__head_of_department = new_head_of_dep
+        else:
+            TypeError
+
+    head_of_department = property(get_head_of_department, set_head_of_department)
 
     def get_users(self) -> List[user.User]:
         return self.__users

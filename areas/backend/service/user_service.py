@@ -83,11 +83,13 @@ class UserService:
     def is_user_exists(self, email: str) -> bool:
         return self.user_repo.is_user_exists(email)
 
-    def add_new_department(self, new_department: Department) -> None:
+    def add_new_department(self, new_department: Department, head_of_dep_email: str) -> None:
         try:
             self.user_repo.get_department_by_name(new_department.department_name)
             raise AlreadyExistsError
         except DepartmentNotFoundError:
+            head_of_department = self.user_repo.get_user_from_db_by_email(head_of_dep_email).get_id()
+            new_department.head_of_department = head_of_department
             self.user_repo.add_new_department(new_department)
 
     def delete_department_by_name(self, department_name: str) -> None:

@@ -21,6 +21,7 @@ function Admin() {
     const [users, setUsers] = useState([]);
     const [error, setError] = useState(null);
     const [name, setName] = useState('');
+    const [head, setHeadOfDepartment] = useState('');
     const [departmentName, setDepartmentName] = useState(null);
     const [status, setStatus] = useState(1);
     const [titleError, setTitleError] = useState('');
@@ -320,7 +321,7 @@ function Admin() {
                 Создать отдел
             </h3>
             <div className="form-group">
-                <label htmlFor="name">Заголовок</label>
+                <label htmlFor="name">Название</label>
                 <input
                     type="text"
                     id="name"
@@ -330,10 +331,21 @@ function Admin() {
                 />
                 {titleError === "Введите заголовок" && <div className="error-message">{titleError}</div>} {}
             </div>
+            <div className="form-group">
+                <label htmlFor="name">Глава департамента</label>
+                <input
+                    type="text"
+                    id="head"
+                    value={head}
+                    onChange={(e) => setHeadOfDepartment(e.target.value)}
+                    required
+                />
+                {titleError === "Введите заголовок" && <div className="error-message">{titleError}</div>} {}
+            </div>
             <button className="add-workspace-button"
                     onClick={() => {
-                        if (name !== '') {
-                            handleDepartmentAdding(name)
+                        if (name !== '' && head !== '') {
+                            handleDepartmentAdding(name, head)
                         } else {
                             if (name === "") setTitleError("Введите заголовок");
                         }
@@ -525,9 +537,9 @@ export async function updateWorkspace(space_id, new_status, new_owner, setUserDe
     }
 }
 
-export async function handleDepartmentAdding(department_name) {
+export async function handleDepartmentAdding(department_name, head_of_dep) {
     try {
-        const response = await add_department({department_name});
+        const response = await add_department({department_name, head_of_dep});
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);

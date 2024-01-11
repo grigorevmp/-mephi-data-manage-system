@@ -198,12 +198,12 @@ def add_new_department():
     """
     request_data = request.get_json()
     try:
-        new_department = Department(department_name=request_data['department_name'], users=None)
+        new_department = Department(department_name=request_data['department_name'], head_of_department=None, users=None)
     except KeyError:
         return jsonify({'error': 'Invalid request body'}), 400
 
     try:
-        userController.add_new_department(new_department)
+        userController.add_new_department(new_department, request_data['head_of_dep'])
     except AlreadyExistsError:
         return jsonify({'error': 'Already exists department with such name'}), 400
 
@@ -258,6 +258,7 @@ def get_department_with_users():
     return jsonify(
         {
             "department_name": department.department_name,
+            "head_of_department": department.head_of_department,
             "users": users
         }
     ), 200

@@ -16,6 +16,7 @@ class DepartmentModel(db.Model):
 
     id = db.Column('department_id', db.Integer, primary_key=True, autoincrement=True)
     name = db.Column('department_name', db.String, unique=True)
+    head_of_department = db.Column('head_of_department', db.String)
 
 
 class UserModel(db.Model):
