@@ -13,6 +13,14 @@ services:
       MINIO_ROOT_USER: grigorev.mp
       MINIO_ROOT_PASSWORD: 12341234
     command: server --console-address ":9001" /data
+  postgres:
+    image: postgres:14.8-alpine3.18
+    environment:
+      POSTGRES_DB: "sud"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"
   backend:
     build:
       context: ./areas/backend
@@ -21,6 +29,7 @@ services:
       - "5000:5000"
     depends_on:
         - minio
+        - postgres
   ui:
     build:
       context: ./areas/sud_frontend

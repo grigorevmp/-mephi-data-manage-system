@@ -495,8 +495,6 @@ class DataStoreStorageRepository:
             workspace_id=workspace_id
         )
 
-        self.db.session.add(_branch)
-        self.db.session.commit()
 
         _workspace = WorkspaceModel(
             id=workspace_id,
@@ -506,18 +504,20 @@ class DataStoreStorageRepository:
             status=WorkSpaceStatus.Active.value,
             user_id=user.id,
         )
+        self.db.session.add(_workspace)
+        self.db.session.commit()
 
         try:
             task = uuid.UUID(task)
         except:
             task = None
 
-        self.db.session.add(_workspace)
-        self.db.session.commit()
-
         document = Document(name=document_name, file=file_id, task_id=task,
                             time=datetime.datetime.now(), _id=file_id)
         self.add_new_document(document, document_data, _branch)
+
+        self.db.session.add(_branch)
+        self.db.session.commit()
 
         return _workspace.id
 
@@ -749,11 +749,6 @@ class DataStoreStorageRepository:
                 parent_branch_id=str(branch.get_parent_id()),
             )
 
-            self.db.session.add(_branch)
-            workspace.branches.append(_branch)
-
-            self.db.session.commit()
-
             old_document: DocumentModel = DocumentModel.query.filter_by(id=branch.document).first()
 
             document_data = BytesIO(self.get_file_from_cloud(old_document.id + "_" + old_document.name)).read()
@@ -765,6 +760,9 @@ class DataStoreStorageRepository:
 
             self.add_new_document(document, base64_bytes, _branch)
 
+            self.db.session.add(_branch)
+            workspace.branches.append(_branch)
+            self.db.session.commit()
             return _branch.id
         else:
             raise NotAllowedError()

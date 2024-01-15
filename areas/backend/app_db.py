@@ -1,4 +1,4 @@
-SQLALCHEMY_DATABASE_URI = 'sqlite:///cloud.sqlite3'
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://postgres:postgres@postgres:5432/sud'
 
 
 def get_current_db(app):
