@@ -103,7 +103,7 @@ function UserWorkspaces() {
 
 
     useEffect(() => {
-        if (workspace === "" && workspaceId !== "") {
+        if (workspace === "" && workspaceId !== "" && workspaceId !== null) {
             fetch(`${API_BASE_URL}/get_workspace/${workspaceId.id}`, {
             method: 'GET', headers: {
                 'Content-Type': 'application/json',
@@ -621,8 +621,9 @@ export async function handleWorkspaceArchiving(id) {
 
         if (response === 200) {
             localStorage.setItem('authToken', response.token);
+            localStorage.setItem('workspaceStorageState', null);
 
-            window.location.reload();
+            window.location.href = '/workspaces';
             console.error('Registration was successful, token provided in the response.');
         } else {
             console.error('Registration was unsuccessful, no token provided in the response.');
