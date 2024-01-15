@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import '../registration/RegistrationForm.css';
 import {registerUser} from "../api";
 
@@ -10,6 +10,20 @@ function RegistrationForm({onRegistration}) {
     const [errorMessage, setErrorMessage] = useState('');
     const [role] = useState('2');
 
+    const API_BASE_URL = 'http://localhost:5000';
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/get_workspaces`, {
+            method: 'GET', headers: {
+                'Content-Type': 'application/json',
+            }, credentials: 'include',
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    window.location.href = '/workspaces';
+                }
+            });
+    }, []);
     const handleSubmit = (event) => {
         event.preventDefault();
         onRegistration(email, password, username, role, setErrorMessage);

@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {loginUser} from '../api';
 import './LoginForm.css';
+const API_BASE_URL = 'http://localhost:5000';
 
 
 function LoginForm({onLogin}) {
@@ -12,6 +13,20 @@ function LoginForm({onLogin}) {
         event.preventDefault();
         onLogin(email, password, setErrorMessage);
     };
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/get_workspaces`, {
+            method: 'GET', headers: {
+                'Content-Type': 'application/json',
+            }, credentials: 'include',
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    window.location.href = '/workspaces';
+                }
+            });
+    }, []);
+
 
     return (
         <div className="login-form-container">
@@ -47,7 +62,7 @@ function LoginForm({onLogin}) {
 }
 
 export async function handleLogin(email, password, setErrorMessage) {
-  try {
+    try {
         const response = await loginUser({email, password});
 
         if (response === 200) {
