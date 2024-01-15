@@ -16,7 +16,7 @@ class TestUserWorkspace:
         assert response.status_code == 200
         resp = response.json
         assert resp['id'] == user1_workspace1_id
-        assert resp["status"] == str(WorkSpaceStatus.Active.value)
+        assert resp["status"] == WorkSpaceStatus.Active.value
 
     def test_get_archived_workspace_by_id(self, app_client_user):
         workspace_id = user1_workspace2_id
@@ -24,7 +24,7 @@ class TestUserWorkspace:
         assert response.status_code == 200
         resp = response.json
         assert resp['id'] == user1_workspace2_id
-        assert resp["status"] == str(WorkSpaceStatus.Archived.value)
+        assert resp["status"] == WorkSpaceStatus.Archived.value
 
     def test_get_archived_workspace_by_id_wout_query(self, app_client_user):
         workspace_id = user1_workspace2_id
@@ -96,7 +96,7 @@ class TestUserWorkspace:
         assert response.status_code == 200
         resp = response.json
         assert resp['id'] == user1_workspace1_id
-        assert resp["status"] == str(WorkSpaceStatus.Archived.value)
+        assert resp["status"] == WorkSpaceStatus.Archived.value
 
     def test_archive_workspace_negative(self, app_client_user):
         workspace_id = user1_workspace2_id
@@ -163,7 +163,7 @@ class TestAdminWorkspace:
         assert delete_workspace.status_code == 200
 
         db_workspace = WorkspaceModel.query.filter_by(id=workspace_id).first()
-        assert db_workspace.status == str(WorkSpaceStatus.Deleted.value)
+        assert db_workspace.status == WorkSpaceStatus.Deleted.value
 
         response = app_client_admin.get(f'/all_workspaces?deleted=true')
         assert response.status_code == 200
@@ -194,4 +194,4 @@ class TestAdminWorkspace:
         resp = response.json
         assert len(resp['workspaces']) == 2
         unarchived_workspace = [ws for ws in response.json['workspaces'] if ws['id'] == workspace_id]
-        assert unarchived_workspace[0]['status'] == str(WorkSpaceStatus.Active.value)
+        assert unarchived_workspace[0]['status'] == WorkSpaceStatus.Active.value
