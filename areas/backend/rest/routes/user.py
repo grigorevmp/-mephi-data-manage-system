@@ -97,7 +97,14 @@ def search_for():
 
     # query date
     user = get_user_by_token()
-    name = request.args.get('name', default=".", type=str)
+    name = request.args.get('name', default="", type=str)
+
+    if name == "":
+        return jsonify(
+        {
+            "items": []
+        }
+    ), 200
 
     items: list[tuple[Document, str, str]] = dataStoreController.search_in_cloud(user.email, name)
     items_content = []
