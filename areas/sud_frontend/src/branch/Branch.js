@@ -452,10 +452,9 @@ function Branch() {
                                     <li onClick={() => goToRequest(space_id, current_branch.id)}
                                         className="workspace-item"
                                         key={current_branch.id}> {current_branch.title}</li>))}
-                            </ul>) : (<p className="workspace-item-p">Не найдено реквестов</p>)}
+                            </ul>) : branch.parent !== "-1" ? (<div><p className="workspace-item-p">Не найдено реквестов</p>
+                            <button className="add-workspace" onClick={toggleDialog}><p>+</p></button></div>) : (<p className="workspace-item-p">Не найдено реквестов</p>)} 
 
-                        {branch.parent !== "-1" &&
-                            <button className="add-workspace" onClick={toggleDialog}><p>+</p></button>}
                     </div>
                 </div>
 
