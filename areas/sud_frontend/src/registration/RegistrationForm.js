@@ -8,7 +8,7 @@ function RegistrationForm({onRegistration}) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [role] = useState('1');
+    const [role] = useState('2');
 
     const handleSubmit = (event) => {
         event.preventDefault();
