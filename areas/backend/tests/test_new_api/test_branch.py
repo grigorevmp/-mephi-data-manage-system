@@ -72,7 +72,7 @@ class TestUserBranch:
         assert request['source_branch_id'] == request_data['source_branch_id']
         assert request['target_branch_id'] == request_data['target_branch_id']
         assert request['title'] == request_data['title']
-        assert request['status'] == str(RequestStatus.Open.value)
+        assert request['status'] == RequestStatus.Open.value
         return request, request_id
 
     def test_add_branch_1_4(self, app_client_user):
@@ -105,7 +105,7 @@ class TestUserBranch:
         get_request = app_client_user.get(f'/workspace/{workspace_id}/request/{request_id}')
         assert get_request.status_code == 200
         request = get_request.json
-        assert request['status'] == str(RequestStatus.Merged.value)
+        assert request['status'] == RequestStatus.Merged.value
         get_response = app_client_user.get(f'/get_workspace/{workspace_id}')
         assert get_response.status_code == 200
         resp = get_response.json
@@ -126,7 +126,7 @@ class TestUserBranch:
         get_request = app_client_user.get(f'/workspace/{workspace_id}/request/{request_id}')
         assert get_request.status_code == 200
         request = get_request.json
-        assert request['status'] == str(RequestStatus.Closed.value)
+        assert request['status'] == RequestStatus.Closed.value
         get_response = app_client_user.get(f'/get_workspace/{workspace_id}')
         assert get_response.status_code == 200
         resp = get_response.json

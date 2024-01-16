@@ -21,7 +21,7 @@ class TestAdminUserManagement:
         assert user1_workspace2_id in workspaces_ids
         assert user1_workspace3_id not in workspaces_ids
         active_ws = [ws for ws in response.json['workspaces'] if ws['id'] == user1_workspace1_id]
-        assert active_ws[0]['status'] == str(WorkSpaceStatus.Active.value)
+        assert active_ws[0]['status'] == WorkSpaceStatus.Active.value
 
         delete_user = app_client_admin.delete(f'/user/{casual_user_id}')
         assert delete_user.status_code == 200
@@ -35,10 +35,10 @@ class TestAdminUserManagement:
         response = app_client_admin.get(f'/all_workspaces')
         assert response.status_code == 200
         resp = response.json
-        assert len(resp['workspaces']) == 2
+        assert len(resp['workspaces']) == 3
         workspaces_ids = [ws['id'] for ws in response.json['workspaces']]
         assert user1_workspace1_id in workspaces_ids
         assert user1_workspace2_id in workspaces_ids
-        assert user1_workspace3_id not in workspaces_ids
+        assert user1_workspace3_id in workspaces_ids
         archived_ws = [ws for ws in response.json['workspaces'] if ws['id'] == user1_workspace1_id]
-        assert archived_ws[0]['status'] == str(WorkSpaceStatus.Archived.value)
+        assert archived_ws[0]['status'] == WorkSpaceStatus.Archived.value

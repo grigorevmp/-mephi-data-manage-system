@@ -25,11 +25,11 @@ class UserModel(db.Model):
     id = db.Column('user_id', db.String, primary_key=True)
 
     email = db.Column(db.String(100))
-    passwordHash = db.Column(db.String(50))
+    passwordHash = db.Column(db.String(70))
     username = db.Column(db.String(200))
     role = db.Column(db.Enum(Role))
 
-    department_id = db.Column(db.String, db.ForeignKey("department.department_id"))
+    department_id = db.Column(db.Integer, db.ForeignKey("department.department_id"))
 
 
 class DocumentModel(db.Model):
@@ -40,7 +40,7 @@ class DocumentModel(db.Model):
 
     name = db.Column(db.String)
     task_id = db.Column(db.String)
-    modification_time = db.Column(db.Integer)
+    modification_time = db.Column(db.DateTime)
     file_id = db.Column(db.String)
 
 
@@ -50,9 +50,9 @@ class RequestModel(db.Model):
 
     id = db.Column('request_id', db.String, primary_key=True)
 
-    title = db.Column(db.String)
-    description = db.Column(db.Integer)
-    status = db.Column(db.String)
+    title = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=True)
+    status = db.Column(db.Integer)
 
     source_branch_id = db.Column(db.String, db.ForeignKey("branch.branch_id"))
     target_branch_id = db.Column(db.String, db.ForeignKey("branch.branch_id"))
@@ -74,7 +74,7 @@ class BranchModel(db.Model):
 
 
 class BaseAccessModel(db.Model):
-    __tablename__ = 'access'
+    __tablename__ = 'accesses'
     __table_args__ = {'extend_existing': True}
 
     id = db.Column('access_id', db.Integer, primary_key=True, autoincrement=True)
@@ -92,10 +92,10 @@ class WorkspaceModel(db.Model):
     id = db.Column('workspace_id', db.String, primary_key=True)
     title = db.Column(db.String)
     description = db.Column(db.String)
-    status = db.Column(db.String)
+    status = db.Column(db.Integer)
     main_branch = db.Column(db.String)
 
-    user_id = db.Column(db.String, db.ForeignKey("user.user_id"))
+    user_id = db.Column(db.String, db.ForeignKey("user.user_id"), nullable=True)
 
     accesses: Mapped[List[BaseAccessModel]] = db.relationship(
         'BaseAccessModel',
