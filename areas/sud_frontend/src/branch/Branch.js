@@ -532,8 +532,6 @@ function Branch() {
                         </div>
 
                         <button className="branch-add" onClick={toggleCreate}>Создать ветку</button>
-                        {branch.name !== "master" &&
-                            <button className="branch-delete" onClick={toggleConfirm}>Удалить</button>}
 
                     </div>) : (<p>Нажмите на рабочее пространство для просмотра</p>)}
                 </div>
