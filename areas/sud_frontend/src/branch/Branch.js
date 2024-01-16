@@ -187,7 +187,7 @@ function Branch() {
                 setBranch(data);
                 setName(branch.document);
                 if (data.requests != null && data.requests != undefined) {
-                    data.requests.map(req => {if (req.status === "1") toggleActiveRequest()});
+                    data.requests.map(req => {if (req.status === 1) toggleActiveRequest()});
                 }
             })
             .catch(error => {
