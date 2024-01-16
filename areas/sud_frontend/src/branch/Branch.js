@@ -17,6 +17,7 @@ function Branch() {
     const [result, setResult] = useState(null);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isActiveRequest, setIsActiveRequest] = useState(false);
     const [isCopyDialogOpen, setCopyDialogOpen] = useState(false);
     const [isViewDocumentOpen, setViewDocumentOpen] = useState(false);
     const [isUploadDocumentOpen, setUploadDocumentOpen] = useState(false);
@@ -62,6 +63,10 @@ function Branch() {
                 setResult(value);
             })
         }
+    };
+
+    const toggleActiveRequest = () => {
+        setIsActiveRequest(!isActiveRequest);
     };
 
     const toggleNoEditAccess = () => {
@@ -181,6 +186,9 @@ function Branch() {
             .then(data => {
                 setBranch(data);
                 setName(branch.document);
+                if (data.requests != null && data.requests != undefined) {
+                    data.requests.map(req => {if (req.status === "1") toggleActiveRequest()});
+                }
             })
             .catch(error => {
                 setError(error.message);
@@ -446,13 +454,21 @@ function Branch() {
 
                 <div className="all-workspaces">
                     <div>
-                        {branch.requests != null && branch.requests.length > 0 ? (
+                        {branch.requests != null && branch.requests.length > 0 && isActiveRequest === true ? (
                             <ul className="all-workspaces-container">
-                                {branch.requests.map(current_branch => (
+                                {branch.requests.map(current_branch => ( 
                                     <li onClick={() => goToRequest(space_id, current_branch.id)}
                                         className="workspace-item"
                                         key={current_branch.id}> {current_branch.title}</li>))}
-                            </ul>) : branch.parent !== "-1" ? (<div><p className="workspace-item-p">Не найдено реквестов</p>
+                            </ul>) : branch.requests != null && branch.requests.length > 0 && isActiveRequest === false ? (<div>
+                            <ul className="all-workspaces-container">
+                                {branch.requests.map(current_branch => ( 
+                                    <li onClick={() => goToRequest(space_id, current_branch.id)}
+                                        className="workspace-item"
+                                        key={current_branch.id}> {current_branch.title}</li>))}
+                            </ul> 
+                            <button className="add-workspace" onClick={toggleDialog}><p>+</p></button>
+                            </div>) : branch.parent !== "-1" ? (<div><p className="workspace-item-p">Не найдено реквестов</p>
                             <button className="add-workspace" onClick={toggleDialog}><p>+</p></button></div>) : (<p className="workspace-item-p">Не найдено реквестов</p>)} 
 
                     </div>

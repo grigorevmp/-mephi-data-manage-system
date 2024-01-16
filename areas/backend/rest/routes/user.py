@@ -398,6 +398,7 @@ def get_branch_in_workspace_by_id(space_id, branch_id):
             requests.append(
                 {
                     "title": merge_request.title,
+                    "status": merge_request.status,
                     "id": merge_request.id,
                 }
             )
