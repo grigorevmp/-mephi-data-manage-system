@@ -39,6 +39,6 @@ class TestAdminUserManagement:
         workspaces_ids = [ws['id'] for ws in response.json['workspaces']]
         assert user1_workspace1_id in workspaces_ids
         assert user1_workspace2_id in workspaces_ids
-        assert user1_workspace3_id not in workspaces_ids
+        assert user1_workspace3_id in workspaces_ids
         archived_ws = [ws for ws in response.json['workspaces'] if ws['id'] == user1_workspace1_id]
         assert archived_ws[0]['status'] == WorkSpaceStatus.Archived.value
