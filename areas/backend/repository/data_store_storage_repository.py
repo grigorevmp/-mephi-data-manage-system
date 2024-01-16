@@ -467,7 +467,9 @@ class DataStoreStorageRepository:
         workspace: WorkspaceModel = WorkspaceModel.query.filter_by(id=str(space_id)).first()
         if workspace is None:
             raise SpaceNotFoundError
-        return (UserModel.query.filter_by(id=workspace.user_id).first().username, workspace.user_id, WorkSpace(
+        user = UserModel.query.filter_by(id=workspace.user_id).first()
+        username = user.username if user is not None else "Deleted user!"
+        return (username, workspace.user_id, WorkSpace(
             title=workspace.title,
             description=workspace.description,
             branches=[],
