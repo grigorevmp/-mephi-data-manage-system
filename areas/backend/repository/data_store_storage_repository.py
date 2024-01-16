@@ -477,6 +477,11 @@ class DataStoreStorageRepository:
             status=workspace.status,
             _id=workspace.id,
         ))
+    
+    def delete_user_workspace(self, space_id: uuid.UUID):
+        workspace: WorkspaceModel = WorkspaceModel.query.filter_by(id=str(space_id)).first()
+        workspace.user_id = None
+        self.db.session.commit()
 
     def create_workspace(self, user_mail: str, workspace: WorkSpace, document_name: str, document_data: str, task: str):
         user: UserModel = UserModel.query.filter_by(email=user_mail).first()

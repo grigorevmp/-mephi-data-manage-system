@@ -72,6 +72,9 @@ class DataStoreService:
         if new_owner is not None:
             self.data_store_storage_repo.change_workspace_owner(space_id=space_id, owner=new_owner)
         return self.data_store_storage_repo.get_workspace_by_id_admin(space_id=space_id)
+    
+    def delete_user_workspace(self, space_id: uuid.UUID | None):
+        self.data_store_storage_repo.delete_user_workspace(space_id=space_id)
 
     #############
     # BRANCHES

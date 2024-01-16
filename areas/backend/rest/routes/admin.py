@@ -373,6 +373,7 @@ def delete_user(user_id):
     for workspace in items:
         try:
             dataStoreController.update_workspace(uuid.UUID(workspace['id']), WorkSpaceStatus.Archived.value)
+            dataStoreController.delete_user_workspace(uuid.UUID(workspace['id']))
         except ItemNotFoundError:
             return jsonify({'error': 'Incorrect workspace'}), 404
         except SpaceNotFoundError:

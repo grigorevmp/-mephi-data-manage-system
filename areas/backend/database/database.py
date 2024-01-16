@@ -95,7 +95,7 @@ class WorkspaceModel(db.Model):
     status = db.Column(db.Integer)
     main_branch = db.Column(db.String)
 
-    user_id = db.Column(db.String, db.ForeignKey("user.user_id"))
+    user_id = db.Column(db.String, db.ForeignKey("user.user_id"), nullable=True)
 
     accesses: Mapped[List[BaseAccessModel]] = db.relationship(
         'BaseAccessModel',
