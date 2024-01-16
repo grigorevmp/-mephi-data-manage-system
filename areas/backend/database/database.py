@@ -50,9 +50,9 @@ class RequestModel(db.Model):
 
     id = db.Column('request_id', db.String, primary_key=True)
 
-    title = db.Column(db.String)
-    description = db.Column(db.Integer)
-    status = db.Column(db.String)
+    title = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=True)
+    status = db.Column(db.Integer)
 
     source_branch_id = db.Column(db.String, db.ForeignKey("branch.branch_id"))
     target_branch_id = db.Column(db.String, db.ForeignKey("branch.branch_id"))
