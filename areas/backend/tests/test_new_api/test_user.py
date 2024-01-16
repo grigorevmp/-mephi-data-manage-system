@@ -35,7 +35,7 @@ class TestAdminUserManagement:
         response = app_client_admin.get(f'/all_workspaces')
         assert response.status_code == 200
         resp = response.json
-        assert len(resp['workspaces']) == 2
+        assert len(resp['workspaces']) == 3
         workspaces_ids = [ws['id'] for ws in response.json['workspaces']]
         assert user1_workspace1_id in workspaces_ids
         assert user1_workspace2_id in workspaces_ids
